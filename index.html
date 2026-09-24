@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cut Crew — v0</title>
+<style>
+  :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  *{box-sizing:inherit}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    max-width:420px;margin:0 auto;padding:24px 16px;
+    background:#fff;color:#111;
+  }
+  h1{font-size:18px;margin:0 0 4px}
+  p.sub{font-size:13px;color:#666;margin:0 0 20px}
+  input{
+    width:100%;padding:10px;font-size:14px;
+    border:1px solid #ccc;border-radius:6px;margin-bottom:8px;
+  }
+  button{
+    width:100%;padding:10px;font-size:14px;font-weight:600;
+    background:#111;color:#fff;border:none;border-radius:6px;cursor:pointer;
+  }
+  button:active{opacity:0.8}
+  button.secondary{background:#fff;color:#111;border:1px solid #ccc;margin-bottom:16px}
+  button.exported{background:#2e7d32}
+  ul{list-style:none;padding:0;margin:20px 0 0}
+  li{
+    padding:10px 0;border-bottom:1px solid #eee;
+    font-size:14px;display:flex;justify-content:space-between;gap:8px;
+    cursor:pointer;
+  }
+  li:active{background:#fafafa}
+  li span.name{word-break:break-all}
+  li span.date{color:#999;font-size:12px;white-space:nowrap;flex-shrink:0}
+  li span.status{font-size:11px;color:#2e7d32;white-space:nowrap;flex-shrink:0}
+  .empty{color:#999;font-size:13px;margin-top:20px}
+  .error{color:#c0392b;font-size:13px;margin:0 0 8px;display:none}
+  .detail-box{border:1px solid #eee;border-radius:8px;padding:14px;margin-top:16px}
+  .detail-label{font-size:12px;color:#999;margin-bottom:4px}
+</style>
+</head>
+<body>
+
+<div id="homeScreen">
+  <h1>Cut Crew — v0</h1>
+  <p class="sub">Paste a video, save it. Tap a saved video to review clips for it.</p>
+
+  <input id="videoInput" type="text" placeholder="Paste a YouTube video or stream URL">
+  <div id="errorMsg" class="error">That doesn't look like a valid URL. Paste a full link starting with http:// or https://</div>
+  <button id="saveBtn">Save import</button>
+
+  <ul id="list"></ul>
+  <div id="emptyMsg" class="empty">Nothing saved yet.</div>
+</div>
+
+<div id="reviewScreen" style="display:none">
+  <button class="secondary" id="backHomeBtn">&larr; Back</button>
+  <h1>Review clips</h1>
+  <p class="sub" id="reviewVideoName"></p>
+
+  <input id="clipInput" type="text" placeholder="e.g. funny moment at 2:14">
+  <div id="clipErrorMsg" class="error">You've already saved a clip with that name for this video.</div>
+  <button id="addClipBtn">Save clip</button>
+
+  <ul id="clipList"></ul>
+  <div id="clipEmptyMsg" class="empty">No clips saved for this video yet.</div>
+</div>
+
+<div id="detailScreen" style="display:none">
+  <button class="secondary" id="backReviewBtn">&larr; Back to clips</button>
+  <h1>Clip detail</h1>
+  <div class="detail-box">
+    <div class="detail-label">From video</div>
+    <p class="sub" id="detailVideoName" style="margin-bottom:12px"></p>
+    <div class="detail-label">Clip</div>
+    <p class="sub" id="detailClipName" style="margin-bottom:0"></p>
+  </div>
+  <button id="exportBtn" style="margin-top:16px">Export clip</button>
+</div>
+
+<script>
+var VIDEO_KEY = 'cutcrew_v0_records';
+var CLIP_KEY = 'cutcrew_v0_clips';
+var currentVideoId = null;
+var currentClipId = null;
+
+function loadVideos(){ try{ return JSON.parse(localStorage.getItem(VIDEO_KEY) || '[]'); }catch(e){ return []; } }
+function saveVideos(r){ localStorage.setItem(VIDEO_KEY, JSON.stringify(r)); }
+function loadClips(){ try{ return JSON.parse(localStorage.getItem(CLIP_KEY) || '[]'); }catch(e){ return []; } }
+function saveClips(r){ localStorage.setItem(CLIP_KEY, JSON.stringify(r)); }
+function isValidUrl(str){ try{ var u=new URL(str); return u.protocol==='http:'||u.protocol==='https:'; }catch(e){ return false; } }
+function newId(){ return Date.now() + '-' + Math.random().toString(36).slice(2,7); }
+
+function showScreen(id){
+  ['homeScreen','reviewScreen','detailScreen'].forEach(function(s){
+    document.getElementById(s).style.display = (s===id) ? 'block' : 'none';
+  });
+}
+function showHome(){ currentVideoId=null; currentClipId=null; showScreen('homeScreen'); renderHome(); }
+function showReview(videoId){ currentVideoId=videoId; currentClipId=null; showScreen('reviewScreen'); renderReview(); }
+function showDetail(clipId){ currentClipId=clipId; showScreen('detailScreen'); renderDetail(); }
+
+function renderHome(){
+  var records = loadVideos();
+  var list = document.getElementById('list');
+  var empty = document.getElementById('emptyMsg');
+  list.innerHTML = '';
+  if(records.length===0){ empty.style.display='block'; return; }
+  empty.style.display='none';
+  records.slice().reverse().forEach(function(r){
+    var li=document.createElement('li');
+    var n=document.createElement('span'); n.className='name'; n.textContent=r.name;
+    var d=document.createElement('span'); d.className='date'; d.textContent=new Date(r.savedAt).toLocaleDateString();
+    li.appendChild(n); li.appendChild(d);
+    li.addEventListener('click', function(){ showReview(r.id); });
+    list.appendChild(li);
+  });
+}
+
+function renderReview(){
+  var videos = loadVideos();
+  var video = videos.find(function(v){ return v.id===currentVideoId; });
+  document.getElementById('reviewVideoName').textContent = video ? video.name : '';
+  var clips = loadClips().filter(function(c){ return c.videoId===currentVideoId; });
+  var list = document.getElementById('clipList');
+  var empty = document.getElementById('clipEmptyMsg');
+  list.innerHTML = '';
+  if(clips.length===0){ empty.style.display='block'; return; }
+  empty.style.display='none';
+  clips.slice().reverse().forEach(function(c){
+    var li=document.createElement('li');
+    var n=document.createElement('span'); n.className='name'; n.textContent=c.label;
+    var right;
+    if(c.exported){ right=document.createElement('span'); right.className='status'; right.textContent='exported'; }
+    else{ right=document.createElement('span'); right.className='date'; right.textContent=new Date(c.savedAt).toLocaleDateString(); }
+    li.appendChild(n); li.appendChild(right);
+    li.addEventListener('click', function(){ showDetail(c.id); });
+    list.appendChild(li);
+  });
+}
+
+function renderDetail(){
+  var videos = loadVideos();
+  var clips = loadClips();
+  var clip = clips.find(function(c){ return c.id===currentClipId; });
+  var video = clip ? videos.find(function(v){ return v.id===clip.videoId; }) : null;
+  document.getElementById('detailVideoName').textContent = video ? video.name : '';
+  document.getElementById('detailClipName').textContent = clip ? clip.label : '';
+  var btn = document.getElementById('exportBtn');
+  if(clip && clip.exported){ btn.textContent='Exported ✓'; btn.classList.add('exported'); }
+  else{ btn.textContent='Export clip'; btn.classList.remove('exported'); }
+}
+
+document.getElementById('saveBtn').addEventListener('click', function(){
+  var input=document.getElementById('videoInput');
+  var err=document.getElementById('errorMsg');
+  var val=input.value.trim();
+  if(!val || !isValidUrl(val)){ err.style.display='block'; return; }
+  err.style.display='none';
+  var records=loadVideos();
+  records.push({ id:newId(), name:val, savedAt:Date.now() });
+  saveVideos(records);
+  input.value='';
+  renderHome();
+});
+document.getElementById('videoInput').addEventListener('input', function(){ document.getElementById('errorMsg').style.display='none'; });
+document.getElementById('videoInput').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('saveBtn').click(); });
+
+document.getElementById('backHomeBtn').addEventListener('click', showHome);
+document.getElementById('backReviewBtn').addEventListener('click', function(){ showReview(currentVideoId); });
+
+document.getElementById('addClipBtn').addEventListener('click', function(){
+  var input=document.getElementById('clipInput');
+  var err=document.getElementById('clipErrorMsg');
+  var val=input.value.trim();
+  if(!val || currentVideoId===null) return;
+  var clips=loadClips();
+  var dup = clips.some(function(c){ return c.videoId===currentVideoId && c.label.trim().toLowerCase()===val.toLowerCase(); });
+  if(dup){ err.style.display='block'; return; }
+  err.style.display='none';
+  clips.push({ id:newId(), videoId:currentVideoId, label:val, savedAt:Date.now(), exported:false });
+  saveClips(clips);
+  input.value='';
+  renderReview();
+});
+document.getElementById('clipInput').addEventListener('input', function(){ document.getElementById('clipErrorMsg').style.display='none'; });
+document.getElementById('clipInput').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('addClipBtn').click(); });
+
+document.getElementById('exportBtn').addEventListener('click', function(){
+  var clips=loadClips();
+  var clip=clips.find(function(c){ return c.id===currentClipId; });
+  if(clip){ clip.exported=true; saveClips(clips); renderDetail(); }
+});
+
+showHome();
+</script>
+</body>
+</html>
