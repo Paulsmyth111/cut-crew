@@ -10,6 +10,11 @@
 - Screenshots of every screen in `05-Screenshots/` (home, new project, AI moments, clip list, ready to post, settings numbers, feedback form, Thai)
 - From now on: Claude commits and screenshots after every change
 
+## Tue 6 Oct — Phone home-screen app (PWA) ✅ (finished Wed 14 Oct)
+- Cut Crew has its own website: **paulsmyth111.github.io/cut-crew** (GitHub Pages, from the `main` branch)
+- Installed on my iPhone with **Add to Home Screen** — it opens full-screen with the teal scissors icon
+- The AI moment finder only works in the Claude version; everything else works in the phone app
+
 ## Fri 9 Oct — Sprint 2 log entry (week 5)
 **What I built:**
 - Story 1 — Mark the moment: start/end times on every clip, length shown, warns over 60s
