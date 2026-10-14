@@ -3,198 +3,828 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Cut Crew — v0</title>
+<title>Cut Crew</title>
+<meta name="theme-color" content="#0A0E0F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cut Crew">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
 <style>
-  :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-  *{box-sizing:inherit}
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    max-width:420px;margin:0 auto;padding:24px 16px;
-    background:#fff;color:#111;
+  :root{--bg:#0A0E0F;--surf:#101719;--surf2:#162023;--line:#1E2B2E;--teal:#5FE3BC;--text:#F2F6F5;--muted:#8E9A9C;--dim:#7D898A;--red:#E5534B;
+    box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+  *{box-sizing:inherit;-webkit-tap-highlight-color:transparent}
+  html{scroll-padding-top:env(safe-area-inset-top,0px)}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  svg{display:block}
+  .app{max-width:1100px;margin:0 auto;padding:18px 18px calc(110px + env(safe-area-inset-bottom,0px))}
+  .top{display:flex;justify-content:space-between;align-items:flex-start}
+  .logo{display:flex;align-items:center;gap:8px;color:var(--text)}
+  .logo b{font-size:24px;font-weight:900;font-style:italic;letter-spacing:.02em;transform:skewX(-6deg);display:block}
+  .logo i{color:var(--teal);font-style:normal}
+  .tag{font-size:10px;letter-spacing:.18em;color:var(--muted);margin-top:6px}
+  .icons{display:flex;gap:16px;color:var(--text)}
+  .icons button{background:none;border:none;color:inherit;padding:8px;min-height:0;cursor:pointer}
+  .hero{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;align-items:center;margin:22px 0 18px;min-height:190px}
+  h1{font-size:clamp(34px,7vw,58px);line-height:1.02;margin:0 0 12px;font-weight:800;letter-spacing:-.02em}
+  .cur{display:inline-block;width:3px;height:.85em;background:var(--teal);margin-left:8px;vertical-align:-.05em;animation:bl 1s steps(1) infinite}
+  @keyframes bl{50%{opacity:0}}
+  .lead{font-size:clamp(14px,2.4vw,18px);color:#C9D2D1;margin:0;line-height:1.35}
+  .art{height:200px;border-radius:18px;background:radial-gradient(circle at 70% 30%,rgba(95,227,188,.18),transparent 60%),#0E1416;border:1px solid var(--line);position:relative;overflow:hidden}
+  .mon{position:absolute;right:10%;top:16%;width:62%;height:64%;border-radius:12px;border:6px solid #1B2426;background:linear-gradient(180deg,#2b1f3a 0%,#c8613f 58%,#f0a35e 100%);transform:rotate(-4deg);display:flex;align-items:center;justify-content:center;text-align:center;font-style:italic;font-weight:700;font-size:15px;line-height:1.1;color:rgba(255,255,255,.9);letter-spacing:.04em}
+  .imp{border:1.5px dashed var(--teal);border-radius:16px;padding:18px 16px;background:linear-gradient(180deg,rgba(95,227,188,.10),rgba(95,227,188,.03));text-align:center}
+  .imp .t{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--teal);font-size:20px;font-weight:800;letter-spacing:.04em}
+  .improw{display:flex;gap:8px;max-width:560px;margin:12px auto 8px}
+  .imp small{font-size:12px;color:var(--muted)}
+  .imp small a{color:var(--muted);cursor:pointer;text-decoration:none}
+  input{width:100%;padding:12px 14px;font-size:16px;min-height:46px;border:1px solid var(--line);border-radius:10px;background:#0B1213;color:var(--text)}
+  input::placeholder{color:var(--dim)}
+  input:focus{outline:none;border-color:var(--teal)}
+  button{font-family:inherit;font-size:15px;font-weight:700;padding:12px 18px;min-height:46px;border:none;border-radius:10px;background:var(--teal);color:#062018;cursor:pointer}
+  button:active{opacity:.8}
+  button.ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
+  button.danger{background:transparent;color:var(--red);border:1px solid var(--red)}
+  button.done{background:#2AA383;color:#fff}
+  button.full{width:100%}
+  .error{color:var(--red);font-size:13px;margin:6px 0 0;display:none}
+  .tools{display:grid;grid-template-columns:repeat(12,1fr);gap:8px;margin:14px 0 6px}
+  .tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:78px;padding:10px 4px;border-radius:12px;background:var(--surf);border:1px solid var(--line);font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;text-align:center;line-height:1.15}
+  .head{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px;font-size:11px;letter-spacing:.14em;color:var(--muted)}
+  .head a{cursor:pointer;color:var(--text)}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .card{background:var(--surf);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer}
+  .card:active{background:var(--surf2)}
+  .th{height:96px;position:relative}
+  .th::after{content:"";position:absolute;left:calc(50% - 7px);top:calc(50% - 10px);border-left:16px solid rgba(255,255,255,.8);border-top:10px solid transparent;border-bottom:10px solid transparent}
+  .cb{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .cn{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cm{font-size:12px;color:var(--dim);margin-top:3px}
+  .cm .ok{color:var(--teal)}
+  .dots{color:var(--muted);letter-spacing:2px}
+  .empty{color:var(--dim);font-size:13px;padding:22px;border:1px dashed var(--line);border-radius:12px;text-align:center;grid-column:1/-1}
+  .pane{max-width:560px;margin:18px auto 0}
+  h2{font-size:24px;margin:0 0 6px;letter-spacing:-.01em}
+  .sub{font-size:13px;color:var(--muted);margin:0 0 16px;overflow-wrap:anywhere;line-height:1.45}
+  .list .card{display:block;margin-bottom:8px}
+  .list .cb{padding:14px}
+  .ask{font-size:13px;color:var(--muted);margin:10px 0 0}
+  .row{display:flex;gap:8px;margin-top:10px}
+  .row button{flex:1}
+  .lab{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin:0 0 6px}
+  nav{position:fixed;left:0;right:0;bottom:0;background:rgba(10,14,15,.97);border-top:1px solid var(--line);padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px))}
+  .ni{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;justify-items:center}
+  .nb{background:none;color:var(--muted);font-size:11px;font-weight:500;padding:6px 10px;min-height:0;display:flex;flex-direction:column;align-items:center;gap:4px;border-radius:0}
+  .nb.on{color:var(--teal);box-shadow:inset 0 -2px 0 var(--teal)}
+  .plus{width:54px;height:54px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 0 0 6px var(--bg),0 0 24px rgba(95,227,188,.35)}
+  .toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--surf2);border:1px solid var(--line);padding:9px 16px;border-radius:999px;font-size:12px;display:none;z-index:5}
+  .lang{font-size:12px;font-weight:700;border:1px solid var(--line)!important;border-radius:999px;padding:4px 10px!important;display:flex;gap:8px}
+  .lang b{opacity:.45}.lang b.on{opacity:1;color:var(--teal)}
+  .box{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+  textarea{width:100%;padding:12px 14px;font-size:16px;line-height:1.4;font-family:inherit;border:1px solid var(--line);border-radius:10px;background:#0B1213;color:var(--text);resize:vertical;min-height:44px}
+  textarea:focus{outline:none;border-color:var(--teal)}
+  .cnt{font-size:11px;color:var(--dim);text-align:right;margin-top:3px}
+  .cnt.over{color:var(--red)}
+  .tr{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .len{font-size:12px;color:var(--muted);margin-top:6px}
+  .len b{color:var(--teal)}
+  .len.warn b{color:#F0C33C}
+  .time{display:inline-block;font-size:11px;font-weight:700;color:var(--teal);background:rgba(95,227,188,.1);border-radius:6px;padding:2px 6px;margin-right:6px}
+  .es{grid-column:1/-1;border:1px dashed var(--line);border-radius:16px;padding:26px 18px;text-align:center;background:var(--surf)}
+  .es .ei{width:56px;height:56px;border-radius:50%;margin:0 auto 12px;background:rgba(95,227,188,.12);color:var(--teal);display:flex;align-items:center;justify-content:center}
+  .es h3{margin:0 0 6px;font-size:17px}
+  .es p{margin:0 auto 14px;color:var(--muted);font-size:13px;max-width:360px;line-height:1.45}
+  .steps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+  .steps span{font-size:12px;color:#C9D2D1;background:var(--surf2);border:1px solid var(--line);border-radius:999px;padding:6px 11px}
+  .steps i{font-style:normal;color:var(--teal);font-weight:800;margin-right:5px}
+  .tile{position:relative}
+  .tile.soon{opacity:.38}
+  .tile em{position:absolute;top:5px;right:5px;font-style:normal;font-size:7.5px;font-weight:800;letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 3px}
+  .nb.dim{opacity:.4}
+  .dimlink{opacity:.5}
+  .cm{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+  .cm .time{margin-right:0}
+  .ai{border-color:rgba(95,227,188,.45);background:linear-gradient(180deg,rgba(95,227,188,.08),var(--surf) 60%)}
+  .aih{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+  .aih>span{width:38px;height:38px;border-radius:10px;background:rgba(95,227,188,.15);color:var(--teal);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ait{font-weight:800;font-size:16px}
+  .ais{font-size:12px;color:var(--muted);margin-top:2px}
+  .help{font-size:12px;color:var(--muted);margin-bottom:8px}
+  .help summary{cursor:pointer;color:var(--teal);font-weight:600}
+  .help ol{margin:6px 0 0;padding-left:20px;line-height:1.6}
+  .aist{font-size:13px;color:var(--muted);margin-top:10px;display:none;align-items:center;gap:8px}
+  .aist.err{color:var(--red)}
+  .spin{width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--teal);border-radius:50%;animation:sp 0.8s linear infinite;flex-shrink:0}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .st{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center}
+  .st b{display:block;font-size:24px;color:var(--teal);line-height:1}
+  .st span{display:block;font-size:11px;color:var(--muted);margin-top:6px;line-height:1.25}
+  .opts{display:flex;gap:6px;flex-wrap:wrap}
+  .opts button{flex:1;min-width:60px;background:var(--bg);color:var(--text);border:1px solid var(--line);font-weight:600}
+  .opts button.on{border-color:var(--teal);background:rgba(95,227,188,.12);color:var(--teal)}
+  .q{margin-bottom:16px}
+  .q p{margin:0 0 8px;font-size:14px;font-weight:600;line-height:1.35}
+  .fbbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:22px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--surf)}
+  .fbbar p{margin:0;font-size:13px;color:var(--muted);line-height:1.35}
+  .fbbar button{flex-shrink:0}
+  .mo{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}
+  .mo.saved{opacity:.6}
+  .moh{display:flex;gap:10px;align-items:flex-start}
+  .sc{flex-shrink:0;width:40px;height:40px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:16px;line-height:1}
+  .sc small{font-size:8px;font-weight:600;opacity:.8;margin-top:2px}
+  .mot{font-weight:700;font-size:14px;line-height:1.3}
+  .mom{display:flex;flex-wrap:wrap;gap:4px 6px;margin-top:4px;align-items:center}
+  .sty{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#C58BF2;background:rgba(197,139,242,.12);border-radius:6px;padding:2px 6px}
+  .why{font-size:12px;color:#C9D2D1;margin:8px 0 0;line-height:1.45}
+  .quote{font-size:12px;color:var(--muted);font-style:italic;border-left:2px solid var(--line);padding-left:8px;margin:8px 0 0}
+  .hk{display:block;width:100%;text-align:left;font-weight:600;font-size:13px;background:var(--surf);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:6px}
+  .hk.on{border-color:var(--teal);background:rgba(95,227,188,.1)}
+  .hk i{font-style:normal;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:2px}
+  @media(max-width:760px){
+    .hero{grid-template-columns:1fr;min-height:0;margin:16px 0 14px}
+    .art{display:none}
+    .tools{display:flex;overflow-x:auto;scrollbar-width:none}
+    .tools::-webkit-scrollbar{display:none}
+    .tile{flex:0 0 92px}
+    .grid{grid-template-columns:1fr 1fr}
+    .improw{flex-direction:column}
   }
-  h1{font-size:18px;margin:0 0 4px}
-  p.sub{font-size:13px;color:#666;margin:0 0 20px}
-  input{
-    width:100%;padding:10px;font-size:14px;
-    border:1px solid #ccc;border-radius:6px;margin-bottom:8px;
-  }
-  button{
-    width:100%;padding:10px;font-size:14px;font-weight:600;
-    background:#111;color:#fff;border:none;border-radius:6px;cursor:pointer;
-  }
-  button:active{opacity:0.8}
-  button.secondary{background:#fff;color:#111;border:1px solid #ccc;margin-bottom:16px}
-  button.exported{background:#2e7d32}
-  ul{list-style:none;padding:0;margin:20px 0 0}
-  li{
-    padding:10px 0;border-bottom:1px solid #eee;
-    font-size:14px;display:flex;justify-content:space-between;gap:8px;
-    cursor:pointer;
-  }
-  li:active{background:#fafafa}
-  li span.name{word-break:break-all}
-  li span.date{color:#999;font-size:12px;white-space:nowrap;flex-shrink:0}
-  li span.status{font-size:11px;color:#2e7d32;white-space:nowrap;flex-shrink:0}
-  .empty{color:#999;font-size:13px;margin-top:20px}
-  .error{color:#c0392b;font-size:13px;margin:0 0 8px;display:none}
-  .detail-box{border:1px solid #eee;border-radius:8px;padding:14px;margin-top:16px}
-  .detail-label{font-size:12px;color:#999;margin-bottom:4px}
 </style>
 </head>
 <body>
-
-<div id="homeScreen">
-  <h1>Cut Crew — v0</h1>
-  <p class="sub">Paste a video, save it. Tap a saved video to review clips for it.</p>
-
-  <input id="videoInput" type="text" placeholder="Paste a YouTube video or stream URL">
-  <div id="errorMsg" class="error">That doesn't look like a valid URL. Paste a full link starting with http:// or https://</div>
-  <button id="saveBtn">Save import</button>
-
-  <ul id="list"></ul>
-  <div id="emptyMsg" class="empty">Nothing saved yet.</div>
-</div>
-
-<div id="reviewScreen" style="display:none">
-  <button class="secondary" id="backHomeBtn">&larr; Back</button>
-  <h1>Review clips</h1>
-  <p class="sub" id="reviewVideoName"></p>
-
-  <input id="clipInput" type="text" placeholder="e.g. funny moment at 2:14">
-  <div id="clipErrorMsg" class="error">You've already saved a clip with that name for this video.</div>
-  <button id="addClipBtn">Save clip</button>
-
-  <ul id="clipList"></ul>
-  <div id="clipEmptyMsg" class="empty">No clips saved for this video yet.</div>
-</div>
-
-<div id="detailScreen" style="display:none">
-  <button class="secondary" id="backReviewBtn">&larr; Back to clips</button>
-  <h1>Clip detail</h1>
-  <div class="detail-box">
-    <div class="detail-label">From video</div>
-    <p class="sub" id="detailVideoName" style="margin-bottom:12px"></p>
-    <div class="detail-label">Clip</div>
-    <p class="sub" id="detailClipName" style="margin-bottom:0"></p>
+<div class="app">
+  <div class="top">
+    <div><div class="logo"><span id="crown"></span><b>CUT<i>.</i>CREW</b></div><div class="tag">TURN CLIPS INTO STORIES</div></div>
+    <div class="icons"><button id="langBtn" class="lang" aria-label="Switch language" title="Switch language"></button><button id="searchBtn" aria-label="Search" title="Search"></button><button id="setBtn" aria-label="Settings" title="Settings"></button></div>
   </div>
-  <button id="exportBtn" style="margin-top:16px">Export clip</button>
+
+  <section id="homeScreen">
+    <div class="hero">
+      <div><h1 id="head">Every idea<br>is a hook<span class="cur"></span></h1>
+        <p class="lead">Stop scrolling. Start posting.<br><span id="greet" data-dyn></span></p></div>
+      <div class="art"><div class="mon">GOOD<br>VIDEOS<br>BETTER<br>PEOPLE</div></div>
+    </div>
+    <div class="imp">
+      <div class="t"><span id="impIc"></span>IMPORT</div>
+      <div class="improw"><input id="videoInput" type="text" placeholder="Paste a YouTube video or stream link"><button id="saveBtn">Import</button></div>
+      <div id="errorMsg" data-dyn class="error"></div>
+      <small><span>Paste URL</span> &nbsp;&middot;&nbsp; <a id="upl" class="dimlink">Upload File (soon)</a> &nbsp;&middot;&nbsp; <a id="fch">Fetch Caption</a></small>
+    </div>
+    <div class="tools" id="tools"></div>
+    <input id="search" type="text" placeholder="Search your projects" style="display:none;margin-top:14px">
+    <div class="head"><span>RECENT PROJECTS</span><a id="seeAll" data-dyn style="display:none"></a></div>
+    <div class="grid" id="grid" data-dyn></div>
+    <div class="fbbar"><p>Trying Cut Crew? Tell Paul what you think.</p><button id="fbHomeBtn">Send feedback</button></div>
+  </section>
+
+  <section id="reviewScreen" class="pane" style="display:none">
+    <button class="ghost" id="backHomeBtn" style="margin-bottom:14px">&larr; Back</button>
+    <h2>Review clips</h2>
+    <input id="reviewVideoName" data-dyn type="text" style="margin-bottom:6px">
+    <div id="reviewNameErr" data-dyn class="error"></div>
+    <button class="ghost" id="renameVideoBtn" style="margin-bottom:10px">Save link</button>
+    <div id="watchBox" data-dyn style="margin-bottom:14px"></div>
+    <div class="box ai">
+      <div class="aih"><span id="aiIc"></span><div><div class="ait">AI moment finder</div><div class="ais">Finds the shocking, intriguing &ldquo;wait, what?&rdquo; parts for you</div></div></div>
+      <details id="tHelp" class="help"><summary>How do I get the transcript?</summary>
+        <ol><li>Open the video on YouTube</li><li>Under the video tap <b>...more</b>, then <b>Show transcript</b></li><li>Select all of it (with the times) and copy</li><li>Paste it below</li></ol></details>
+      <textarea id="transcript" rows="4" placeholder="Paste the video's transcript here, with the timestamps"></textarea>
+      <div id="tInfo" data-dyn class="cnt"></div>
+      <div class="row" style="margin-top:8px"><button id="findBtn">Find the moments</button><button class="ghost" id="stopBtn" style="display:none;flex:0 0 auto">Stop</button></div>
+      <div id="aiStatus" data-dyn class="aist"></div>
+      <div id="moments" data-dyn></div>
+    </div>
+    <div class="box">
+      <div class="lab" style="margin-top:0">Mark a moment</div>
+      <input id="clipInput" type="text" placeholder="Name a clip, e.g. funny moment" style="margin-bottom:8px">
+      <div class="tr"><input id="clipStart" type="text" inputmode="numeric" placeholder="Start, e.g. 2:14"><input id="clipEnd" type="text" inputmode="numeric" placeholder="End, e.g. 2:45"></div>
+      <div id="addLen" data-dyn class="len"></div>
+      <div class="improw" style="margin:8px 0 0"><input id="clipDate" type="date"><button id="addClipBtn">Save</button></div>
+      <div id="clipErrorMsg" data-dyn class="error"></div>
+    </div>
+    <div class="list" id="clipList" data-dyn style="margin-top:16px"></div>
+    <div id="clipEmptyMsg" data-dyn></div>
+    <div id="videoDelete" data-dyn style="margin-top:22px"></div>
+  </section>
+
+  <section id="settingsScreen" class="pane" style="display:none">
+    <button class="ghost" id="backFromSettingsBtn" style="margin-bottom:14px">&larr; Back</button>
+    <h2>Settings</h2>
+    <p class="sub">Your numbers, feedback, and backups.</p>
+
+    <div class="box">
+      <div class="lab" style="margin-top:0">Your numbers</div>
+      <div class="stats" id="stats" data-dyn></div>
+    </div>
+
+    <div class="box">
+      <div class="lab" style="margin-top:0">Feedback</div>
+      <p class="sub" style="margin-bottom:10px">Tell Paul what worked and what didn’t. 5 quick questions.</p>
+      <button class="full" id="fbOpenBtn">Send feedback</button>
+    </div>
+
+    <div class="box">
+      <div class="lab" style="margin-top:0">Backup</div>
+      <p class="sub" style="margin-bottom:10px">Saves everything in this app right now to a file you can keep.</p>
+      <button class="full" id="backupBtn">Download backup</button>
+    </div>
+
+    <div class="box">
+      <div class="lab" style="margin-top:0">Restore</div>
+      <p class="sub" style="margin-bottom:10px">Loads a backup file back in. This replaces everything currently in the app.</p>
+      <input type="file" id="restoreFile" accept="application/json" style="display:none">
+      <div id="restoreArea"></div>
+    </div>
+    <div id="restoreErr" data-dyn class="error"></div>
+  </section>
+
+  <section id="feedbackScreen" class="pane" style="display:none">
+    <button class="ghost" id="backFromFbBtn" style="margin-bottom:14px">&larr; Back</button>
+    <h2>Send feedback</h2>
+    <p class="sub">5 quick questions. Be honest — bad news helps the most.</p>
+    <div class="q"><p>1. Did the AI find moments you’d actually post?</p><div class="opts" id="fq1"></div></div>
+    <div class="q"><p>2. What was confusing or annoying?</p><textarea id="fq2" rows="3"></textarea></div>
+    <div class="q"><p>3. How long did it take you to get one clip ready to post?</p><input id="fq3" type="text" placeholder="e.g. about 5 minutes"></div>
+    <div class="q"><p>4. What one thing would make you use Cut Crew every day?</p><textarea id="fq4" rows="3"></textarea></div>
+    <div class="q"><p>5. How likely are you to use it again for real clipping?</p><div class="opts" id="fq5"></div></div>
+    <div class="q"><p>Your name (optional)</p><input id="fqName" type="text"></div>
+    <div id="fbErr" data-dyn class="error"></div>
+    <button class="full" id="fbSendBtn">Copy &amp; send to Paul</button>
+    <div id="fbDone" data-dyn style="display:none;margin-top:12px"></div>
+  </section>
+
+  <section id="detailScreen" class="pane" style="display:none">
+    <button class="ghost" id="backReviewBtn" style="margin-bottom:14px">&larr; Back to clips</button>
+    <h2>Clip detail</h2>
+    <p class="sub" id="detailVideoName" data-dyn></p>
+    <div class="lab">Clip name</div>
+    <input id="detailName" type="text">
+    <div class="lab" style="margin-top:12px">Start and end</div>
+    <div class="tr"><input id="detailStart" type="text" inputmode="numeric" placeholder="Start, e.g. 2:14"><input id="detailEnd" type="text" inputmode="numeric" placeholder="End, e.g. 2:45"></div>
+    <div id="detailLen" data-dyn class="len"></div>
+    <div class="lab" style="margin-top:12px">Date</div>
+    <input id="detailDate" type="date">
+
+    <div class="lab" style="margin-top:20px">Ready to post</div>
+    <div class="box">
+      <div class="lab" style="margin-top:0">Hook — first line on screen</div>
+      <textarea id="detailHook" rows="2" maxlength="200" placeholder="e.g. He did NOT expect that answer…"></textarea>
+      <div id="hookCnt" data-dyn class="cnt"></div>
+      <div class="lab" style="margin-top:12px">Caption</div>
+      <textarea id="detailCaption" rows="3" maxlength="500" placeholder="Short, curious, makes people want to watch"></textarea>
+      <div id="capCnt" data-dyn class="cnt"></div>
+      <div class="lab" style="margin-top:12px">Hashtags</div>
+      <input id="detailTags" type="text" placeholder="#podcast #funny #fyp">
+      <div id="tagCnt" data-dyn class="cnt"></div>
+      <button class="full ghost" id="copyPostBtn" style="margin-top:10px">Copy post text</button>
+    </div>
+    <div id="detailErr" data-dyn class="error"></div>
+    <button class="full ghost" id="renameBtn" style="margin-top:8px">Save changes</button>
+    <button class="full" id="exportBtn" data-dyn style="margin-top:14px">Export clip</button>
+    <div id="clipDelete" data-dyn style="margin-top:22px"></div>
+  </section>
 </div>
+<div class="toast" id="toast" data-dyn></div>
+<nav><div class="ni" id="nav"></div></nav>
 
 <script>
-var VIDEO_KEY = 'cutcrew_v0_records';
-var CLIP_KEY = 'cutcrew_v0_clips';
-var currentVideoId = null;
-var currentClipId = null;
+var IC={
+crown:'<path d="M3 8l4 4 5-7 5 7 4-4-2 10H5z"/>',
+scissors:'<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.1 15.9M14.5 14.5L20 20M8.1 8.1L12 12"/>',
+rearr:'<rect x="3" y="9" width="11" height="12" rx="2"/><path d="M8 5h11a2 2 0 0 1 2 2v10"/>',
+cc:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10.5 10a2 2 0 0 0-3 1v2a2 2 0 0 0 3 1M17 10a2 2 0 0 0-3 1v2a2 2 0 0 0 3 1"/>',
+spark:'<path d="M11 3l1.8 5.2L18 10l-5.2 1.8L11 17l-1.8-5.2L4 10l5.2-1.8zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
+aa:'<text x="2" y="18" font-size="15" font-weight="700" fill="currentColor" stroke="none">Aa</text>',
+mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+img:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="M21 16l-5-5-9 9"/>',
+up:'<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
+bars:'<path d="M8 20V10M12 20V4M16 20v-7"/>',
+users:'<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14a5 5 0 0 1 5 5"/>',
+home:'<path d="M4 11l8-7 8 7v9H4z"/>',
+folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+folderup:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 17v-6M9.5 13.5L12 11l2.5 2.5"/>',
+cap:'<path d="M2 9l10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5"/>',
+search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+sliders:'<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+plus:'<path d="M12 5v14M5 12h14"/>'};
+function ic(n,s,w){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(w||1.7)+'" stroke-linecap="round" stroke-linejoin="round">'+IC[n]+'</svg>';}
 
-function loadVideos(){ try{ return JSON.parse(localStorage.getItem(VIDEO_KEY) || '[]'); }catch(e){ return []; } }
-function saveVideos(r){ localStorage.setItem(VIDEO_KEY, JSON.stringify(r)); }
-function loadClips(){ try{ return JSON.parse(localStorage.getItem(CLIP_KEY) || '[]'); }catch(e){ return []; } }
-function saveClips(r){ localStorage.setItem(CLIP_KEY, JSON.stringify(r)); }
-function isValidUrl(str){ try{ var u=new URL(str); return u.protocol==='http:'||u.protocol==='https:'; }catch(e){ return false; } }
-function newId(){ return Date.now() + '-' + Math.random().toString(36).slice(2,7); }
-
-function showScreen(id){
-  ['homeScreen','reviewScreen','detailScreen'].forEach(function(s){
-    document.getElementById(s).style.display = (s===id) ? 'block' : 'none';
-  });
+var VK='cutcrew_v0_records',CK='cutcrew_v0_clips',vid=null,cid=null,tt=null,showAll=false;
+var TH={"TURN CLIPS INTO STORIES": "เปลี่ยนคลิปให้เป็นเรื่องราว", "Every idea": "ทุกไอเดีย", "is a hook": "คือฮุกดึงคนดู", "Stop scrolling. Start posting.": "เลิกเลื่อนดู เริ่มโพสต์กันเลย", "IMPORT": "นำเข้า", "Import": "นำเข้า", "Paste URL": "วางลิงก์", "Upload File": "อัปโหลดไฟล์", "Fetch Caption": "ดึงคำบรรยาย", "RECENT PROJECTS": "โปรเจกต์ล่าสุด", "← Back": "← กลับ", "← Back to clips": "← กลับไปที่คลิป", "Review clips": "ตรวจสอบคลิป", "Save": "บันทึก", "No clips for this video yet.": "ยังไม่มีคลิปสำหรับวิดีโอนี้", "Clip detail": "รายละเอียดคลิป", "Clip name": "ชื่อคลิป", "Save name": "บันทึกชื่อ", "Export clip": "ส่งออกคลิป", "Home": "หน้าหลัก", "Projects": "โปรเจกต์", "Learn": "เรียนรู้", "Community": "ชุมชน", "Trim & select": "ตัดและเลือก", "Rearrange": "จัดลำดับใหม่", "Captions": "คำบรรยาย", "Style & pacing": "สไตล์และจังหวะ", "AI metadata": "เมทาดาทา AI", "Voice & translation": "เสียงและการแปล", "Visuals": "ภาพ", "Export": "ส่งออก", "Voice & visuals": "เสียงและภาพ", "Growth & trends": "การเติบโตและเทรนด์", "Collab": "ทำงานร่วมกัน", "Settings": "ตั้งค่า", "Paste a YouTube video or stream link": "วางลิงก์วิดีโอ YouTube หรือไลฟ์สตรีม", "Search your projects": "ค้นหาโปรเจกต์ของคุณ", "Name a clip, e.g. funny moment 2:14": "ตั้งชื่อคลิป เช่น ช่วงตลก 2:14", "Good morning": "สวัสดีตอนเช้า", "Good afternoon": "สวัสดีตอนบ่าย", "Good evening": "สวัสดีตอนเย็น", "SHOW LESS": "แสดงน้อยลง", "SEE ALL": "ดูทั้งหมด", "No projects match that search.": "ไม่พบโปรเจกต์ที่ตรงกับคำค้นหา", "No projects yet. Paste a link in the Import box to start.": "ยังไม่มีโปรเจกต์ วางลิงก์ในช่องนำเข้าเพื่อเริ่มต้น", "clip": "คลิป", "clips": "คลิป", "Exported": "ส่งออกแล้ว", "Delete this video": "ลบวิดีโอนี้", "Delete this clip": "ลบคลิปนี้", "Are you sure? This can’t be undone.": "แน่ใจไหม? การลบนี้ย้อนกลับไม่ได้", "Yes, delete": "ใช่ ลบเลย", "Cancel": "ยกเลิก", "Video deleted": "ลบวิดีโอแล้ว", "Clip deleted": "ลบคลิปแล้ว", "Video imported": "นำเข้าวิดีโอแล้ว", "Marked as exported": "ทำเครื่องหมายว่าส่งออกแล้ว", "Name saved": "บันทึกชื่อแล้ว", "That doesn’t look like a link. Paste the full address starting with http:// or https://": "ลิงก์นี้ดูไม่ถูกต้อง วางที่อยู่แบบเต็มที่ขึ้นต้นด้วย http:// หรือ https://", "You already imported that video.": "คุณนำเข้าวิดีโอนี้ไปแล้ว", "You already have a clip with that name on this video.": "คุณมีคลิปชื่อนี้ในวิดีโอนี้อยู่แล้ว", "A clip needs a name.": "คลิปต้องมีชื่อ", "Another clip on this video already has that name.": "มีคลิปอื่นในวิดีโอนี้ที่ใช้ชื่อนี้แล้ว", "Watch on YouTube \u2192": "ดูบน YouTube \u2192", "Player blocked here \u2014 watch on YouTube \u2192": "เล่นที่นี่ไม่ได้ \u2014 ไปดูบน YouTube \u2192", "Can\u2019t save \u2014 you may be in private/incognito mode": "บันทึกไม่ได้ \u2014 อาจอยู่ในโหมดส่วนตัว", "Copy video link": "คัดลอกลิงก์วิดีโอ", "Open it in another tab or on your phone, and note the times of the best bits.": "เปิดในแท็บอื่นหรือในมือถือ แล้วจดเวลาช่วงที่ดีที่สุด", "Copied \u2713": "คัดลอกแล้ว \u2713", "Couldn\u2019t copy \u2014 long-press the link to copy it": "คัดลอกไม่ได้ \u2014 กดค้างที่ลิงก์เพื่อคัดลอก", "Paste it into a new tab to watch \u2014 this app can\u2019t open or play it directly.": "วางในแท็บใหม่เพื่อดู \u2014 แอปนี้เปิดหรือเล่นโดยตรงไม่ได้"};
+var TH2={"Mark a moment":"มาร์กช่วงเด็ด","Name a clip, e.g. funny moment":"ตั้งชื่อคลิป เช่น ช่วงตลก","Start, e.g. 2:14":"เริ่ม เช่น 2:14","End, e.g. 2:45":"จบ เช่น 2:45","Start and end":"เวลาเริ่มและจบ","Clip length":"ความยาวคลิป","Add both a start and an end time.":"ใส่ทั้งเวลาเริ่มและเวลาจบ","Write times like 2:14 or 1:02:14.":"เขียนเวลาแบบ 2:14 หรือ 1:02:14","The end has to be after the start.":"เวลาจบต้องอยู่หลังเวลาเริ่ม","Over 60s — may be too long for Shorts":"เกิน 60 วิ — อาจยาวเกินไปสำหรับ Shorts","Ready to post":"พร้อมโพสต์","Hook — first line on screen":"ฮุก — ประโยคแรกบนจอ","Caption":"แคปชัน","Hashtags":"แฮชแท็ก","Copy post text":"คัดลอกข้อความโพสต์","Save changes":"บันทึกการเปลี่ยนแปลง","Changes saved":"บันทึกแล้ว","Clip saved":"บันทึกคลิปแล้ว","Hook ready":"ฮุกพร้อม","characters — keep it readable in 2 seconds":"ตัวอักษร — ให้อ่านจบใน 2 วินาที","characters":"ตัวอักษร","hashtag":"แฮชแท็ก","hashtags":"แฮชแท็ก","aim for 5–10":"แนะนำ 5–10 อัน","Write a hook, caption or hashtags first":"เขียนฮุก แคปชัน หรือแฮชแท็กก่อน","No projects yet":"ยังไม่มีโปรเจกต์","Paste a YouTube link in the Import box above and Cut Crew turns it into a project you can clip.":"วางลิงก์ YouTube ในช่องนำเข้าด้านบน แล้ว Cut Crew จะสร้างเป็นโปรเจกต์ให้คุณตัดคลิป","Paste a link":"วางลิงก์","Mark the best moments":"มาร์กช่วงที่ดีที่สุด","Write the hook & export":"เขียนฮุกแล้วส่งออก","Paste your first link":"วางลิงก์แรกของคุณ","No clips yet":"ยังไม่มีคลิป","Watch the video, then mark your first moment above: give it a name, a start and an end time, and tap Save.":"ดูวิดีโอ แล้วมาร์กช่วงแรกด้านบน: ตั้งชื่อ ใส่เวลาเริ่มและจบ แล้วกดบันทึก","Mark your first moment":"มาร์กช่วงแรกของคุณ","Date":"วันที่","Save link":"บันทึกลิงก์","Link saved":"บันทึกลิงก์แล้ว","Back up your videos and clips to a file, or restore from one.":"สำรองวิดีโอและคลิปเป็นไฟล์ หรือกู้คืนจากไฟล์","Backup":"สำรองข้อมูล","Saves everything in this app right now to a file you can keep.":"บันทึกทุกอย่างในแอปตอนนี้เป็นไฟล์ที่เก็บไว้ได้","Download backup":"ดาวน์โหลดไฟล์สำรอง","Restore":"กู้คืน","Loads a backup file back in. This replaces everything currently in the app.":"โหลดไฟล์สำรองกลับเข้ามา ข้อมูลทั้งหมดในแอปตอนนี้จะถูกแทนที่","Choose backup file":"เลือกไฟล์สำรอง","Replace everything currently in the app with this backup? This can’t be undone.":"แทนที่ทุกอย่างในแอปด้วยไฟล์สำรองนี้? ย้อนกลับไม่ได้","Yes, restore":"ใช่ กู้คืน","Restore complete":"กู้คืนเสร็จแล้ว","Backup downloaded":"ดาวน์โหลดไฟล์สำรองแล้ว","Couldn’t save the backup file here":"บันทึกไฟล์สำรองที่นี่ไม่ได้","That file isn’t a valid backup.":"ไฟล์นี้ไม่ใช่ไฟล์สำรองที่ถูกต้อง","Couldn’t read that file.":"อ่านไฟล์นี้ไม่ได้","Marked as exported (file save unavailable here)":"ทำเครื่องหมายว่าส่งออกแล้ว (บันทึกไฟล์ที่นี่ไม่ได้)"};
+var TH3={"Your numbers, feedback, and backups.":"ตัวเลขของคุณ ฟีดแบ็ก และการสำรองข้อมูล","Your numbers":"ตัวเลขของคุณ","Videos imported":"วิดีโอที่นำเข้า","AI moments found":"ช่วงเด็ดที่ AI พบ","Clips saved":"คลิปที่บันทึก","Clips from AI":"คลิปจาก AI","Hooks written":"ฮุกที่เขียน","Clips exported":"คลิปที่ส่งออก","Feedback":"ฟีดแบ็ก","Tell Paul what worked and what didn’t. 5 quick questions.":"บอก Paul ว่าอะไรใช้ได้ อะไรไม่ได้ 5 คำถามสั้นๆ","Send feedback":"ส่งฟีดแบ็ก","5 quick questions. Be honest — bad news helps the most.":"5 คำถามสั้นๆ ตอบตรงๆ — ข่าวร้ายช่วยได้มากที่สุด","1. Did the AI find moments you’d actually post?":"1. AI หาช่วงที่คุณจะโพสต์จริงๆ เจอไหม?","2. What was confusing or annoying?":"2. อะไรที่งงหรือน่ารำคาญ?","3. How long did it take you to get one clip ready to post?":"3. ใช้เวลานานแค่ไหนกว่าจะได้คลิปพร้อมโพสต์หนึ่งคลิป?","4. What one thing would make you use Cut Crew every day?":"4. อะไรหนึ่งอย่างที่จะทำให้คุณใช้ Cut Crew ทุกวัน?","5. How likely are you to use it again for real clipping?":"5. มีโอกาสแค่ไหนที่คุณจะใช้อีกเพื่อตัดคลิปจริง?","Your name (optional)":"ชื่อของคุณ (ไม่บังคับ)","e.g. about 5 minutes":"เช่น ประมาณ 5 นาที","Copy & send to Paul":"คัดลอกและส่งให้ Paul","Yes":"ใช่","Some":"บางส่วน","No":"ไม่","Didn’t try AI":"ไม่ได้ลอง AI","Answer at least one question first.":"ตอบอย่างน้อยหนึ่งข้อก่อน","Copied ✓ Now paste it in LINE or WhatsApp to Paul.":"คัดลอกแล้ว ✓ วางใน LINE หรือ WhatsApp ส่งให้ Paul","Couldn’t copy automatically — select the text below and copy it to Paul.":"คัดลอกอัตโนมัติไม่ได้ — เลือกข้อความด้านล่างแล้วคัดลอกส่งให้ Paul","Open LINE":"เปิด LINE","Open email":"เปิดอีเมล","Trying Cut Crew? Tell Paul what you think.":"กำลังลอง Cut Crew? บอก Paul ว่าคิดยังไง","AI moments":"AI หาช่วงเด็ด","Import a video first":"นำเข้าวิดีโอก่อน","Save a clip first":"บันทึกคลิปก่อน","SOON":"เร็วๆ นี้","Upload File (soon)":"อัปโหลดไฟล์ (เร็วๆ นี้)","AI moment finder":"AI หาช่วงเด็ด","Finds the shocking, intriguing “wait, what?” parts for you":"หาช่วงช็อก ช่วงน่าสงสัย แบบ “เดี๋ยวนะ อะไรนะ?” ให้คุณ","How do I get the transcript?":"เอาทรานสคริปต์มาจากไหน?","Open the video on YouTube":"เปิดวิดีโอใน YouTube","Paste it below":"วางด้านล่าง","Paste the video's transcript here, with the timestamps":"วางทรานสคริปต์ของวิดีโอที่นี่ พร้อมเวลา","Find the moments":"หาช่วงเด็ด","Stop":"หยุด","timestamps found":"เวลาที่พบ","No timestamps found — copy the transcript with the times showing":"ไม่พบเวลา — คัดลอกทรานสคริปต์แบบที่มีเวลาด้วย","Paste the full transcript first — that looks too short.":"วางทรานสคริปต์ทั้งหมดก่อน — อันนี้ดูสั้นเกินไป","Starting the AI…":"กำลังเริ่ม AI…","Reading the whole video for you… this can take up to a minute":"กำลังอ่านวิดีโอทั้งหมดให้คุณ… อาจใช้เวลาถึงหนึ่งนาที","Found some — writing the hooks…":"เจอแล้ว — กำลังเขียนฮุก…","The AI couldn’t find clear moments. Check the transcript has its timestamps, then try again.":"AI หาช่วงเด็ดที่ชัดเจนไม่เจอ ตรวจดูว่าทรานสคริปต์มีเวลา แล้วลองใหม่","Long video: only the first part of the transcript was checked.":"วิดีโอยาว: ตรวจเฉพาะส่วนแรกของทรานสคริปต์","The AI moment finder only works when Cut Crew is opened inside the Claude app, with AI allowed.":"AI หาช่วงเด็ดใช้ได้เฉพาะเมื่อเปิด Cut Crew ในแอป Claude และอนุญาตให้ใช้ AI","Too many AI requests right now — wait a minute, then try again.":"ใช้ AI บ่อยเกินไป — รอสักนาทีแล้วลองใหม่","That transcript is too long — paste the first half and try again.":"ทรานสคริปต์ยาวเกินไป — วางครึ่งแรกแล้วลองใหม่","The AI’s answer didn’t come through properly. Tap Find the moments to try again.":"คำตอบของ AI มาไม่ครบ กด หาช่วงเด็ด เพื่อลองใหม่","The AI wouldn’t work on this transcript. Try a different video.":"AI ทำงานกับทรานสคริปต์นี้ไม่ได้ ลองวิดีโออื่น","Sign in to Claude again, then try.":"ลงชื่อเข้า Claude ใหม่ แล้วลองอีกครั้ง","Something went wrong talking to the AI. Try again.":"เชื่อมต่อ AI ไม่สำเร็จ ลองใหม่","Pick a hook":"เลือกฮุก","Save as clip":"บันทึกเป็นคลิป","Saved as a clip ✓ — open":"บันทึกเป็นคลิปแล้ว ✓ — เปิด","Saved as a clip":"บันทึกเป็นคลิปแล้ว"};
+for(var k3 in TH3)TH2[k3]=TH3[k3];
+for(var k2 in TH2)TH[k2]=TH2[k2];
+var lang='en';try{lang=localStorage.getItem('cutcrew_lang')==='th'?'th':'en';}catch(e){}
+function T(s){return lang==='th'&&TH[s]?TH[s]:s;}
+var GR=['linear-gradient(180deg,#2b1f3a,#c8613f 60%,#f0a35e)','linear-gradient(180deg,#5b7288,#8f9a86 60%,#4a4a3a)','linear-gradient(135deg,#1c3a24,#4b7a3c 60%,#2a4a2a)','linear-gradient(135deg,#1F3A44,#2B2547)'];
+function $(i){return document.getElementById(i);}
+function load(k){try{return JSON.parse(localStorage.getItem(k)||'[]');}catch(e){return [];}}
+var STORAGE_OK=true;
+(function(){try{var t='__cc_test__';localStorage.setItem(t,'1');localStorage.removeItem(t);}catch(e){STORAGE_OK=false;}})();
+function store(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){STORAGE_OK=false;toast(lang==='th'?'บันทึกไม่ได้ — อาจอยู่ในโหมดส่วนตัว':'Can\u2019t save — you may be in private/incognito mode');}}
+function nid(){return Date.now()+'-'+Math.random().toString(36).slice(2,7);}
+function todayStr(){return new Date().toISOString().slice(0,10);}
+function fmtDate(s){var d=new Date(s+'T00:00:00');return isNaN(d)?s:d.toLocaleDateString(lang==='th'?'th-TH':undefined);}
+function parseTime(s){
+  s=(s||'').trim().replace(/[.]/g,':');if(!s)return null;var m;
+  if(/^\d+$/.test(s))return parseInt(s,10);
+  if((m=s.match(/^(\d+):([0-5]?\d)$/)))return +m[1]*60+ +m[2];
+  if((m=s.match(/^(\d+):([0-5]?\d):([0-5]?\d)$/)))return +m[1]*3600+ +m[2]*60+ +m[3];
+  return NaN;
 }
-function showHome(){ currentVideoId=null; currentClipId=null; showScreen('homeScreen'); renderHome(); }
-function showReview(videoId){ currentVideoId=videoId; currentClipId=null; showScreen('reviewScreen'); renderReview(); }
-function showDetail(clipId){ currentClipId=clipId; showScreen('detailScreen'); renderDetail(); }
+function fmtTime(n){if(n===null||n===undefined||isNaN(n))return '';var h=Math.floor(n/3600),m=Math.floor(n%3600/60),s=n%60;return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(s).padStart(2,'0');}
+function fmtLen(n){return n<60?n+'s':Math.floor(n/60)+'m '+String(n%60).padStart(2,'0')+'s';}
+/* returns {start,end,len,err,warn} — both times optional, but if one is given both are needed */
+function checkTimes(a,b){
+  var s=parseTime(a),e=parseTime(b),r={start:s,end:e,len:null,err:'',warn:''};
+  if(s===null&&e===null)return r;
+  if(s===null||e===null){r.err='Add both a start and an end time.';return r;}
+  if(isNaN(s)||isNaN(e)){r.err='Write times like 2:14 or 1:02:14.';return r;}
+  if(e<=s){r.err='The end has to be after the start.';return r;}
+  r.len=e-s;if(r.len>60)r.warn='Over 60s — may be too long for Shorts';return r;
+}
+function showLen(box,t){
+  box.className='len'+(t.warn?' warn':'');box.innerHTML='';
+  if(t.err||t.len===null)return;
+  var b=el('b',null,fmtLen(t.len));box.appendChild(document.createTextNode(T('Clip length')+': '));box.appendChild(b);
+  if(t.warn)box.appendChild(document.createTextNode(' · '+T(t.warn)));
+}
+function cleanTags(s){var seen={},out=[];(s||'').split(/[\s,]+/).forEach(function(t){t=t.replace(/^#+/,'');if(!t)return;var k=t.toLowerCase();if(seen[k])return;seen[k]=1;out.push('#'+t);});return out;}
+function okUrl(s){try{var u=new URL(s);return u.protocol==='http:'||u.protocol==='https:';}catch(e){return false;}}
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e;}
+function dn(url){try{var u=new URL(url);if(/youtube\.com|youtu\.be/.test(u.hostname)){var id=u.searchParams.get('v')||u.pathname.split('/').filter(Boolean).pop()||'video';return 'YouTube · '+id;}return u.hostname;}catch(e){return url;}}
+function ytId(url){
+  try{var u=new URL(url);
+    if(/youtu\.be$/.test(u.hostname))return u.pathname.split('/').filter(Boolean)[0]||null;
+    if(/youtube\.com$/.test(u.hostname)){
+      if(u.searchParams.get('v'))return u.searchParams.get('v');
+      var parts=u.pathname.split('/').filter(Boolean);
+      var i=parts.indexOf('embed');if(i>-1&&parts[i+1])return parts[i+1];
+      i=parts.indexOf('shorts');if(i>-1&&parts[i+1])return parts[i+1];
+      i=parts.indexOf('live');if(i>-1&&parts[i+1])return parts[i+1];
+    }
+  }catch(e){}
+  return null;
+}
+function renderWatch(url){
+  var box=$('watchBox');box.innerHTML='';
+  var id=ytId(url);
+  if(id){
+    var card=el('div');card.style.cssText='width:100%;padding:18px 16px;border-radius:12px;background:linear-gradient(135deg,#1F3A44,#2B2547);display:flex;align-items:center;gap:14px';
+    var pl=el('div');pl.style.cssText='width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.12);flex-shrink:0;position:relative';
+    var tri=el('div');tri.style.cssText='position:absolute;left:18px;top:14px;border-left:14px solid #fff;border-top:9px solid transparent;border-bottom:9px solid transparent';
+    pl.appendChild(tri);card.appendChild(pl);
+    var tx=el('div');tx.style.minWidth='0';
+    var t1=el('div',null,'YouTube \u00b7 '+id);t1.style.cssText='font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+    var t2=el('div',null,T('Open it in another tab or on your phone, and note the times of the best bits.'));t2.style.cssText='font-size:12px;color:#C9D2D1;margin-top:3px;line-height:1.4';
+    tx.appendChild(t1);tx.appendChild(t2);card.appendChild(tx);
+    var ratio=el('div');ratio.style.cssText='width:100%;padding-top:56.25%;border-radius:12px;overflow:hidden;background:#000;position:relative;display:none';
+    var img=document.createElement('img');img.alt='';
+    img.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover';
+    img.onload=function(){if(img.naturalWidth>120){ratio.style.display='block';card.style.display='none';}};
+    img.onerror=function(){ratio.remove();};
+    img.src='https://img.youtube.com/vi/'+id+'/hqdefault.jpg';
+    ratio.appendChild(img);box.appendChild(ratio);box.appendChild(card);
+  }
+  var btn=el('button','ghost full',T('Copy video link'));
+  btn.style.marginTop='8px';
+  btn.onclick=function(){copyToClipboard(url,btn);};
+  box.appendChild(btn);
+  var note=el('div');note.style.cssText='font-size:11px;color:var(--dim);margin-top:6px';
+  note.textContent=T('Paste it into a new tab to watch \u2014 this app can\u2019t open or play it directly.');
+  box.appendChild(note);
+}
+function copyToClipboard(text,btn){
+  var done=function(ok){
+    var orig=btn.getAttribute('data-orig')||btn.textContent;
+    btn.setAttribute('data-orig',orig);
+    btn.textContent=ok?T('Copied \u2713'):T('Couldn\u2019t copy \u2014 long-press the link to copy it');
+    setTimeout(function(){btn.textContent=orig;},1600);
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){done(true);}).catch(function(){done(false);});
+  }else{
+    try{
+      var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.select();var ok=document.execCommand('copy');document.body.removeChild(ta);done(ok);
+    }catch(e){done(false);}
+  }
+}
+function toast(m){var t=$('toast');t.textContent=T(m);t.style.display='block';clearTimeout(tt);tt=setTimeout(function(){t.style.display='none';},1800);}
+function soon(n){return function(){toast(lang==='th'?T(n)+' เร็วๆ นี้':n+' is coming soon');};}
+function confirmCtl(label,yes){
+  var w=el('div');
+  function idle(){w.innerHTML='';var b=el('button','danger full',T(label));b.onclick=ask;w.appendChild(b);}
+  function ask(){w.innerHTML='';w.appendChild(el('p','ask',T('Are you sure? This can\u2019t be undone.')));var r=el('div','row'),y=el('button','danger',T('Yes, delete')),n=el('button','ghost',T('Cancel'));y.onclick=yes;n.onclick=idle;r.appendChild(y);r.appendChild(n);w.appendChild(r);}
+  idle();return w;
+}
+function show(id){['homeScreen','reviewScreen','detailScreen','settingsScreen','feedbackScreen'].forEach(function(s){$(s).style.display=s===id?'block':'none';});
+  var nh=document.querySelector('[data-n=home]');if(nh)nh.className='nb'+(id==='homeScreen'?' on':'');window.scrollTo(0,0);}
+function goHome(){vid=null;cid=null;show('homeScreen');renderHome();}
+function goReview(id){vid=id;cid=null;show('reviewScreen');renderReview();}
+function goDetail(id){cid=id;show('detailScreen');renderDetail();}
 
 function renderHome(){
-  var records = loadVideos();
-  var list = document.getElementById('list');
-  var empty = document.getElementById('emptyMsg');
-  list.innerHTML = '';
-  if(records.length===0){ empty.style.display='block'; return; }
-  empty.style.display='none';
-  records.slice().reverse().forEach(function(r){
-    var li=document.createElement('li');
-    var n=document.createElement('span'); n.className='name'; n.textContent=r.name;
-    var d=document.createElement('span'); d.className='date'; d.textContent=new Date(r.savedAt).toLocaleDateString();
-    li.appendChild(n); li.appendChild(d);
-    li.addEventListener('click', function(){ showReview(r.id); });
-    list.appendChild(li);
+  var h=new Date().getHours();$('greet').textContent=T(h<12?'Good morning':h<18?'Good afternoon':'Good evening')+', Paul.';
+  var vs=load(VK),cs=load(CK),q=$('search').value.trim().toLowerCase();
+  if(vs.length>1&&$('search').style.display==='none')$('search').style.display='block';
+  var list=vs.map(function(v,i){return {v:v,i:i};}).reverse().filter(function(o){return !q||o.v.name.toLowerCase().indexOf(q)>-1||dn(o.v.name).toLowerCase().indexOf(q)>-1;});
+  var g=$('grid');g.innerHTML='';
+  var sa=$('seeAll');sa.style.display=list.length>3?'inline':'none';sa.textContent=T(showAll?'SHOW LESS':'SEE ALL')+(showAll?' \u2039':' \u203a');
+  if(!list.length){
+    if(vs.length){g.appendChild(el('div','empty',T('No projects match that search.')));return;}
+    g.appendChild(emptyState('scissors','No projects yet','Paste a YouTube link in the Import box above and Cut Crew turns it into a project you can clip.',['Paste a link','Mark the best moments','Write the hook & export'],'Paste your first link',function(){window.scrollTo(0,0);$('videoInput').focus();}));
+    return;}
+  (showAll||q?list:list.slice(0,3)).forEach(function(o){
+    var n=cs.filter(function(c){return c.videoId===o.v.id;}).length;
+    var c=el('div','card'),t=el('div','th');t.style.background=GR[o.i%4];c.appendChild(t);
+    var b=el('div','cb'),l=el('div');l.style.minWidth='0';l.appendChild(el('div','cn',dn(o.v.name)));
+    l.appendChild(el('div','cm',n+' '+T(n===1?'clip':'clips')+' \u00b7 '+new Date(o.v.savedAt).toLocaleDateString(lang==='th'?'th-TH':undefined)));
+    b.appendChild(l);b.appendChild(el('span','dots','\u2022\u2022\u2022'));c.appendChild(b);
+    c.onclick=function(){goReview(o.v.id);};g.appendChild(c);
   });
 }
-
+function emptyState(icon,title,text,steps,btnLabel,onBtn){
+  var w=el('div','es'),i=el('div','ei');i.innerHTML=ic(icon,26,1.8);w.appendChild(i);
+  w.appendChild(el('h3',null,T(title)));w.appendChild(el('p',null,T(text)));
+  if(steps){var s=el('div','steps');steps.forEach(function(x,n){var sp=el('span');var b=el('i',null,String(n+1));sp.appendChild(b);sp.appendChild(document.createTextNode(T(x)));s.appendChild(sp);});w.appendChild(s);}
+  if(btnLabel){var b2=el('button',null,T(btnLabel));b2.onclick=onBtn;w.appendChild(b2);}
+  return w;
+}
 function renderReview(){
-  var videos = loadVideos();
-  var video = videos.find(function(v){ return v.id===currentVideoId; });
-  document.getElementById('reviewVideoName').textContent = video ? video.name : '';
-  var clips = loadClips().filter(function(c){ return c.videoId===currentVideoId; });
-  var list = document.getElementById('clipList');
-  var empty = document.getElementById('clipEmptyMsg');
-  list.innerHTML = '';
-  if(clips.length===0){ empty.style.display='block'; return; }
-  empty.style.display='none';
-  clips.slice().reverse().forEach(function(c){
-    var li=document.createElement('li');
-    var n=document.createElement('span'); n.className='name'; n.textContent=c.label;
-    var right;
-    if(c.exported){ right=document.createElement('span'); right.className='status'; right.textContent='exported'; }
-    else{ right=document.createElement('span'); right.className='date'; right.textContent=new Date(c.savedAt).toLocaleDateString(); }
-    li.appendChild(n); li.appendChild(right);
-    li.addEventListener('click', function(){ showDetail(c.id); });
-    list.appendChild(li);
+  var v=load(VK).filter(function(x){return x.id===vid;})[0];$('reviewVideoName').value=v?v.name:'';$('reviewNameErr').style.display='none';renderWatch(v?v.name:'');
+  if(!aiCtl){$('transcript').value=v&&v.transcript||'';tInfo();renderMoments();if(SAMPLE_READY&&!SAMPLE)aiUnavailable();else aiStatus('','');}
+  var cs=load(CK).filter(function(c){return c.videoId===vid;}).reverse(),l=$('clipList');l.innerHTML='';
+  var em=$('clipEmptyMsg');em.innerHTML='';
+  if(!cs.length)em.appendChild(emptyState('scissors','No clips yet','Watch the video, then mark your first moment above: give it a name, a start and an end time, and tap Save.',null,'Mark your first moment',function(){$('clipInput').focus();}));
+  if(!$('clipDate').value)$('clipDate').value=todayStr();
+  cs.forEach(function(c){var d=el('div','card'),b=el('div','cb'),k=el('div');k.style.minWidth='0';k.appendChild(el('div','cn',c.label));
+    var m=el('div','cm');
+    if(c.start!=null&&c.end!=null)m.appendChild(el('span','time',fmtTime(c.start)+'–'+fmtTime(c.end)+' · '+fmtLen(c.end-c.start)));
+    if(c.exported)m.appendChild(el('span','ok',T('Exported')));else m.appendChild(document.createTextNode(fmtDate(c.date||new Date(c.savedAt).toISOString().slice(0,10))));
+    if(c.hook)m.appendChild(document.createTextNode(' · '+T('Hook ready')));
+    k.appendChild(m);b.appendChild(k);b.appendChild(el('span','dots','\u203a'));d.appendChild(b);d.onclick=function(){goDetail(c.id);};l.appendChild(d);});
+  var x=$('videoDelete');x.innerHTML='';
+  x.appendChild(confirmCtl('Delete this video',function(){store(VK,load(VK).filter(function(y){return y.id!==vid;}));store(CK,load(CK).filter(function(c){return c.videoId!==vid;}));toast('Video deleted');goHome();}));
+}
+function renderDetail(){
+  var c=load(CK).filter(function(x){return x.id===cid;})[0],v=c?load(VK).filter(function(x){return x.id===c.videoId;})[0]:null;
+  $('detailVideoName').textContent=v?v.name:'';$('detailName').value=c?c.label:'';$('detailDate').value=c?(c.date||new Date(c.savedAt).toISOString().slice(0,10)):todayStr();$('detailErr').style.display='none';
+  $('detailStart').value=c?fmtTime(c.start):'';$('detailEnd').value=c?fmtTime(c.end):'';
+  $('detailHook').value=c&&c.hook||'';$('detailCaption').value=c&&c.caption||'';$('detailTags').value=c&&c.tags?c.tags.join(' '):'';
+  updDetailLive();
+  var b=$('exportBtn');if(c&&c.exported){b.textContent=T('Exported')+' \u2713';b.className='full done';}else{b.textContent=T('Export clip');b.className='full';}
+  var d=$('clipDelete');d.innerHTML='';
+  d.appendChild(confirmCtl('Delete this clip',function(){store(CK,load(CK).filter(function(x){return x.id!==cid;}));toast('Clip deleted');goReview(vid);}));
+}
+function addVideo(){
+  var i=$('videoInput'),e=$('errorMsg'),val=i.value.trim();
+  if(!val||!okUrl(val)){e.textContent=T('That doesn\u2019t look like a link. Paste the full address starting with http:// or https://');e.style.display='block';return;}
+  var vs=load(VK);if(vs.some(function(v){return v.name===val;})){e.textContent=T('You already imported that video.');e.style.display='block';return;}
+  e.style.display='none';vs.push({id:nid(),name:val,savedAt:Date.now(),date:todayStr()});var newId=vs[vs.length-1].id;store(VK,vs);i.value='';toast('Video imported');goReview(newId);
+}
+function addClip(){
+  var i=$('clipInput'),e=$('clipErrorMsg'),val=i.value.trim();
+  function bad(m){e.textContent=T(m);e.style.display='block';}
+  if(!val){bad('A clip needs a name.');i.focus();return;}
+  var cs=load(CK);if(cs.some(function(c){return c.videoId===vid&&c.label.toLowerCase()===val.toLowerCase();})){bad('You already have a clip with that name on this video.');return;}
+  var t=checkTimes($('clipStart').value,$('clipEnd').value);if(t.err){bad(t.err);return;}
+  var dIn=$('clipDate'),dVal=dIn.value||todayStr();e.style.display='none';
+  cs.push({id:nid(),videoId:vid,label:val,savedAt:Date.now(),date:dVal,exported:false,start:t.start,end:t.end,hook:'',caption:'',tags:[]});store(CK,cs);
+  i.value='';dIn.value='';$('clipStart').value='';$('clipEnd').value='';$('addLen').innerHTML='';renderReview();toast('Clip saved');
+}
+function renameClip(){
+  var val=$('detailName').value.trim(),dateVal=$('detailDate').value||todayStr(),e=$('detailErr');
+  if(!val){e.textContent=T('A clip needs a name.');e.style.display='block';return;}
+  var cs=load(CK),c=cs.filter(function(x){return x.id===cid;})[0];if(!c)return;
+  if(cs.some(function(x){return x.id!==c.id&&x.videoId===c.videoId&&x.label.toLowerCase()===val.toLowerCase();})){e.textContent=T('Another clip on this video already has that name.');e.style.display='block';return;}
+  var t=checkTimes($('detailStart').value,$('detailEnd').value);if(t.err){e.textContent=T(t.err);e.style.display='block';return;}
+  e.style.display='none';c.label=val;c.date=dateVal;c.start=t.start;c.end=t.end;
+  c.hook=$('detailHook').value.trim();c.caption=$('detailCaption').value.trim();c.tags=cleanTags($('detailTags').value);
+  $('detailTags').value=c.tags.join(' ');
+  store(CK,cs);toast('Changes saved');updDetailLive();
+}
+function cnt(box,n,limit,unit){box.textContent=n+' / '+limit+' '+T(unit);box.className='cnt'+(n>limit?' over':'');}
+function updDetailLive(){
+  showLen($('detailLen'),checkTimes($('detailStart').value,$('detailEnd').value));
+  cnt($('hookCnt'),$('detailHook').value.trim().length,60,'characters — keep it readable in 2 seconds');
+  cnt($('capCnt'),$('detailCaption').value.trim().length,150,'characters');
+  var n=cleanTags($('detailTags').value).length,b=$('tagCnt');
+  b.textContent=n+' '+T(n===1?'hashtag':'hashtags')+' · '+T('aim for 5–10');b.className='cnt'+(n>10?' over':'');
+}
+function postText(){
+  return [$('detailHook').value.trim(),$('detailCaption').value.trim(),cleanTags($('detailTags').value).join(' ')].filter(Boolean).join('\n\n');
+}
+
+$('crown').innerHTML=ic('crown',26,1.8);$('crown').style.color='#5FE3BC';
+$('impIc').innerHTML=ic('folderup',30,1.6);
+$('searchBtn').innerHTML=ic('search',22);$('setBtn').innerHTML=ic('sliders',22);
+var TL=[['AI moments','spark','#5FE3BC','ai'],['Trim & select','scissors','#7AA2F7','clip'],['Captions','cc','#F0C33C','post'],['AI metadata','aa','#F0955C','post'],['Export','up','#5FE3BC','export'],['Rearrange','rearr','#7AA2F7'],['Style & pacing','spark','#C58BF2'],['Voice & translation','mic','#6E9BFF'],['Visuals','img','#F06DB3'],['Voice & visuals','bars','#A78BFA'],['Growth & trends','bars','#B07CF0'],['Collab','users','#E8EEF0']];
+function goTarget(t){
+  var vs=load(VK);
+  if(!vs.length){goHome();window.scrollTo(0,0);$('videoInput').focus();toast('Import a video first');return;}
+  var v=vs[vs.length-1];
+  if(t==='post'||t==='export'){
+    var cs=load(CK).filter(function(c){return c.videoId===v.id;});
+    if(cs.length){goReview(v.id);goDetail(cs[cs.length-1].id);var tg=t==='post'?$('detailHook'):$('exportBtn');setTimeout(function(){tg.scrollIntoView({block:'center'});if(t==='post')tg.focus();},60);return;}
+    toast('Save a clip first');t='clip';
+  }
+  goReview(v.id);var f=t==='ai'?$('transcript'):$('clipInput');setTimeout(function(){f.scrollIntoView({block:'center'});f.focus();},60);
+}
+TL.forEach(function(t){var b=el('button','tile'+(t[3]?'':' soon'));b.style.color=t[2];b.innerHTML=ic(t[1],24)+'<span style="color:#DDE5E4">'+t[0]+'</span>'+(t[3]?'':'<em>SOON</em>');b.onclick=t[3]?function(){goTarget(t[3]);}:soon(t[0]);$('tools').appendChild(b);});
+[['home','Home',goHome],['folder','Projects',function(){goHome();$('grid').scrollIntoView({behavior:'smooth'});}],['plus','',function(){goHome();$('videoInput').focus();}],['cap','Learn',soon('Learn')],['users','Community',soon('Community')]].forEach(function(n){
+  var b=el('button',n[0]==='plus'?'plus':'nb'+(n[0]==='home'?' on':'')+(n[0]==='cap'||n[0]==='users'?' dim':''));b.setAttribute('data-n',n[0]);
+  b.innerHTML=n[0]==='plus'?ic('plus',28,2.4):ic(n[0],22)+'<span>'+n[1]+'</span>';b.onclick=n[2];$('nav').appendChild(b);});
+$('saveBtn').onclick=addVideo;$('videoInput').onkeydown=function(e){if(e.key==='Enter')addVideo();};
+$('videoInput').oninput=function(){$('errorMsg').style.display='none';};
+$('upl').onclick=soon('Upload File');$('fch').onclick=function(){goTarget('ai');};
+$('searchBtn').onclick=function(){goHome();var s=$('search');s.style.display=s.style.display==='none'?'block':'none';if(s.style.display==='block')s.focus();};
+$('setBtn').onclick=function(){show('settingsScreen');renderSettings();};
+$('backFromSettingsBtn').onclick=goHome;
+$('search').oninput=renderHome;
+$('seeAll').onclick=function(){showAll=!showAll;renderHome();};
+$('backHomeBtn').onclick=goHome;$('backReviewBtn').onclick=function(){goReview(vid);};
+$('addClipBtn').onclick=addClip;$('clipInput').onkeydown=function(e){if(e.key==='Enter')addClip();};
+$('clipInput').oninput=function(){$('clipErrorMsg').style.display='none';};
+function renameVideo(){
+  var val=$('reviewVideoName').value.trim(),e=$('reviewNameErr');
+  if(!val||!okUrl(val)){e.textContent=T('That doesn\u2019t look like a link. Paste the full address starting with http:// or https://');e.style.display='block';return;}
+  var vs=load(VK),v=vs.filter(function(x){return x.id===vid;})[0];if(!v)return;
+  if(vs.some(function(x){return x.id!==v.id&&x.name===val;})){e.textContent=T('You already imported that video.');e.style.display='block';return;}
+  e.style.display='none';v.name=val;store(VK,vs);toast('Link saved');renderHome();renderWatch(val);
+}
+$('renameVideoBtn').onclick=renameVideo;
+$('reviewVideoName').onkeydown=function(e){if(e.key==='Enter')renameVideo();};
+$('reviewVideoName').oninput=function(){$('reviewNameErr').style.display='none';};
+$('renameBtn').onclick=renameClip;
+['clipStart','clipEnd'].forEach(function(id){$(id).oninput=function(){$('clipErrorMsg').style.display='none';showLen($('addLen'),checkTimes($('clipStart').value,$('clipEnd').value));};
+  $(id).onkeydown=function(e){if(e.key==='Enter')addClip();};});
+['detailStart','detailEnd','detailHook','detailCaption','detailTags'].forEach(function(id){$(id).addEventListener('input',function(){$('detailErr').style.display='none';updDetailLive();});});
+$('copyPostBtn').onclick=function(){var t=postText();if(!t){toast('Write a hook, caption or hashtags first');return;}copyToClipboard(t,$('copyPostBtn'));};
+async function downloadClipInfo(clip,video){
+  var lines=['Cut Crew \u2014 clip export','','Clip: '+clip.label,'Date: '+(clip.date||''),'Source video: '+(video?video.name:'')];
+  if(clip.start!=null&&clip.end!=null)lines.push('Start: '+fmtTime(clip.start),'End: '+fmtTime(clip.end),'Length: '+fmtLen(clip.end-clip.start));
+  lines.push('Exported: '+new Date().toISOString());
+  if(clip.hook||clip.caption||(clip.tags&&clip.tags.length)){lines.push('','--- Ready to post ---');
+    if(clip.hook)lines.push('Hook: '+clip.hook);if(clip.caption)lines.push('Caption: '+clip.caption);if(clip.tags&&clip.tags.length)lines.push('Hashtags: '+clip.tags.join(' '));}
+  lines=lines.concat(['','(Automatic cutting/export of the actual video file is not built yet \u2014 this file is a record of the clip you selected.)']);
+  var fname=(clip.label||'clip').replace(/[^a-z0-9\-_ ]/gi,'_')+'.txt';
+  return saveFile(fname,lines.join('\n'));
+}
+$('exportBtn').onclick=async function(){
+  var cs=load(CK),c=cs.filter(function(x){return x.id===cid;})[0];
+  if(!c)return;
+  var video=load(VK).filter(function(v){return v.id===c.videoId;})[0];
+  c.exported=true;store(CK,cs);renderDetail();
+  var ok=await downloadClipInfo(c,video);
+  toast(ok?'Marked as exported':'Marked as exported (file save unavailable here)');
+};
+function renderLang(){$('langBtn').innerHTML='<b class="'+(lang==='en'?'on':'')+'">EN</b><b class="'+(lang==='th'?'on':'')+'">ไทย</b>';}
+function applyLang(){
+  document.documentElement.lang=lang;
+  var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null),n,list=[];
+  while((n=w.nextNode()))list.push(n);
+  list.forEach(function(n){var p=n.parentNode;if(!p||!p.closest||p.closest('[data-dyn],script,style,#langBtn'))return;
+    if(n._en===undefined)n._en=n.nodeValue;var k=n._en.trim();if(!k)return;
+    n.nodeValue=(lang==='th'&&TH[k])?n._en.replace(k,TH[k]):n._en;});
+  document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(function(i){if(i._ph===undefined)i._ph=i.placeholder;i.placeholder=T(i._ph);});
+  renderLang();
+}
+function rerender(){if($('reviewScreen').style.display==='block')renderReview();else if($('detailScreen').style.display==='block')renderDetail();else renderHome();}
+$('langBtn').onclick=function(){lang=lang==='en'?'th':'en';try{localStorage.setItem('cutcrew_lang',lang);}catch(e){}applyLang();rerender();};
+async function saveFile(filename,text){
+  try{
+    var downloads=await window.claude.use('downloads');
+    if(downloads){
+      var r=await downloads.save({filename:filename,data:text});
+      return r.status==='saved'||r.status==='delivered';
+    }
+  }catch(e){ /* fall through to the blob method below */ }
+  try{
+    var blob=new Blob([text],{type:'text/plain'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');a.href=url;a.download=filename;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(url);},1000);
+    return true;
+  }catch(e){ return false; }
+}
+async function doBackup(){
+  var data={app:'cut-crew',version:1,exportedAt:new Date().toISOString(),videos:load(VK),clips:load(CK)};
+  var ok=await saveFile('cut-crew-backup-'+todayStr()+'.json',JSON.stringify(data,null,2));
+  toast(ok?'Backup downloaded':'Couldn\u2019t save the backup file here');
+}
+function doRestore(file){
+  var err=$('restoreErr');err.style.display='none';
+  var reader=new FileReader();
+  reader.onload=function(){
+    var data;
+    try{data=JSON.parse(reader.result);}catch(e){err.textContent=T('That file isn\u2019t a valid backup.');err.style.display='block';return;}
+    if(!data||!Array.isArray(data.videos)||!Array.isArray(data.clips)){
+      err.textContent=T('That file isn\u2019t a valid backup.');err.style.display='block';return;
+    }
+    store(VK,data.videos);store(CK,data.clips);
+    toast('Restore complete');
+    renderSettings();
+  };
+  reader.onerror=function(){err.textContent=T('Couldn\u2019t read that file.');err.style.display='block';};
+  reader.readAsText(file);
+}
+function renderSettings(){
+  renderStats();
+  $('restoreErr').style.display='none';
+  var area=$('restoreArea');area.innerHTML='';
+  function idle(){
+    area.innerHTML='';
+    var b=el('button','full ghost',T('Choose backup file'));
+    b.onclick=function(){$('restoreFile').value='';$('restoreFile').click();};
+    area.appendChild(b);
+  }
+  function confirmStep(file){
+    area.innerHTML='';
+    area.appendChild(el('p','ask',T('Replace everything currently in the app with this backup? This can\u2019t be undone.')));
+    var r=el('div','row');
+    var y=el('button','danger',T('Yes, restore'));
+    var n=el('button','ghost',T('Cancel'));
+    y.onclick=function(){doRestore(file);};
+    n.onclick=idle;
+    r.appendChild(y);r.appendChild(n);area.appendChild(r);
+  }
+  idle();
+  $('restoreFile').onchange=function(){
+    if(this.files&&this.files[0])confirmStep(this.files[0]);
+  };
+}
+$('backupBtn').onclick=doBackup;
+
+/* ---------- usage numbers (wk6 wed) ---------- */
+function renderStats(){
+  var vs=load(VK),cs=load(CK),found=0,fromAi=0,hooks=0,exp=0;
+  vs.forEach(function(v){if(v.moments)found+=v.moments.length;});
+  cs.forEach(function(c){if(c.ai)fromAi++;if(c.hook)hooks++;if(c.exported)exp++;});
+  var items=[[vs.length,'Videos imported'],[found,'AI moments found'],[cs.length,'Clips saved'],[fromAi,'Clips from AI'],[hooks,'Hooks written'],[exp,'Clips exported']];
+  var g=$('stats');g.innerHTML='';
+  items.forEach(function(it){var d=el('div','st');d.appendChild(el('b',null,String(it[0])));d.appendChild(el('span',null,T(it[1])));g.appendChild(d);});
+}
+/* ---------- feedback form (wk6 mon) ---------- */
+var FB={q1:'',q5:''},fbFrom='homeScreen';
+function optRow(id,key,opts){var r=$(id);r.innerHTML='';opts.forEach(function(o){var b=el('button',FB[key]===o?'on':'',T(o));b.onclick=function(){FB[key]=o;optRow(id,key,opts);$('fbErr').style.display='none';};r.appendChild(b);});}
+function openFeedback(from){fbFrom=from;show('feedbackScreen');$('fbDone').style.display='none';$('fbErr').style.display='none';
+  optRow('fq1','q1',['Yes','Some','No','Didn’t try AI']);optRow('fq5','q5',['1','2','3','4','5']);}
+function fbText(){
+  return ['Cut Crew feedback'+($('fqName').value.trim()?' from '+$('fqName').value.trim():''),'',
+  '1. AI found moments I’d post: '+(FB.q1||'-'),
+  '2. Confusing/annoying: '+($('fq2').value.trim()||'-'),
+  '3. Time to get one clip ready: '+($('fq3').value.trim()||'-'),
+  '4. Would use every day if: '+($('fq4').value.trim()||'-'),
+  '5. Likely to use again (1-5): '+(FB.q5||'-')].join('\n');
+}
+$('fbSendBtn').onclick=function(){
+  if(!FB.q1&&!FB.q5&&!$('fq2').value.trim()&&!$('fq4').value.trim()){$('fbErr').textContent=T('Answer at least one question first.');$('fbErr').style.display='block';return;}
+  var text=fbText(),done=$('fbDone');done.innerHTML='';done.style.display='block';
+  try{localStorage.setItem('cutcrew_last_feedback',text);}catch(e){}
+  var msg=el('p','sub');msg.style.margin='0 0 8px';done.appendChild(msg);
+  function after(ok){msg.textContent=T(ok?'Copied ✓ Now paste it in LINE or WhatsApp to Paul.':'Couldn’t copy automatically — select the text below and copy it to Paul.');}
+  var ta=el('textarea');ta.value=text;ta.rows=7;ta.readOnly=true;done.appendChild(ta);
+  var r=el('div','row'),l=el('button','ghost',T('Open LINE')),m=el('button','ghost',T('Open email'));
+  l.onclick=function(){try{window.open('https://line.me/R/share?text='+encodeURIComponent(text),'_blank');}catch(e){}};
+  m.onclick=function(){try{window.open('mailto:?subject='+encodeURIComponent('Cut Crew feedback')+'&body='+encodeURIComponent(text),'_blank');}catch(e){}};
+  r.appendChild(l);r.appendChild(m);done.appendChild(r);
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(function(){after(true);}).catch(function(){after(false);});else after(false);
+  done.scrollIntoView({block:'center'});
+};
+$('fbOpenBtn').onclick=function(){openFeedback('settingsScreen');};
+$('fbHomeBtn').onclick=function(){openFeedback('homeScreen');};
+$('backFromFbBtn').onclick=function(){if(fbFrom==='settingsScreen'){show('settingsScreen');renderSettings();}else goHome();};
+
+
+/* ---------- AI moment finder (story 3) ---------- */
+var SAMPLE=null,SAMPLE_READY=false,aiCtl=null,MAXT=120000;
+(async function(){
+  try{SAMPLE=(window.claude&&window.claude.use)?await window.claude.use('sample'):null;}catch(e){SAMPLE=null;}
+  SAMPLE_READY=true;
+  if(!SAMPLE&&$('reviewScreen').style.display==='block')aiUnavailable();
+})();
+function curVideo(){return load(VK).filter(function(x){return x.id===vid;})[0];}
+function patchVideo(fn){var vs=load(VK),v=vs.filter(function(x){return x.id===vid;})[0];if(!v)return;fn(v);store(VK,vs);}
+function aiStatus(kind,msg){
+  var s=$('aiStatus');s.innerHTML='';s.className='aist'+(kind==='err'?' err':'');
+  if(!msg){s.style.display='none';return;}
+  s.style.display='flex';if(kind==='busy')s.appendChild(el('span','spin'));
+  s.appendChild(el('span',null,T(msg)));
+}
+function aiUnavailable(){
+  $('findBtn').disabled=true;$('findBtn').style.opacity='.45';
+  aiStatus('err','The AI moment finder only works when Cut Crew is opened inside the Claude app, with AI allowed.');
+}
+function tInfo(){
+  var t=$('transcript').value,n=(t.match(/\b\d{1,2}:\d{2}(?::\d{2})?\b/g)||[]).length,b=$('tInfo');
+  if(!t.trim()){b.textContent='';return;}
+  b.className='cnt'+(n?'':' over');
+  b.textContent=n?(t.length.toLocaleString()+' '+T('characters')+' · '+n+' '+T('timestamps found')):T('No timestamps found — copy the transcript with the times showing');
+}
+function saveTranscript(){var t=$('transcript').value;patchVideo(function(v){v.transcript=t;});}
+function aiPrompt(t){
+  return ['You are the AI inside Cut Crew, an app for YouTube clippers who post short vertical clips (TikTok, Reels, Shorts) to get as many views as possible.',
+  'Below is the transcript of a long YouTube video, with timestamps. Find the moments most likely to stop someone scrolling and make them stay and watch.',
+  'Look for: shock or surprise, a confession or juicy overshare buried in ordinary chat, conflict or an argument, a big reveal or the main event, something genuinely funny, an emotional or romantic beat, a hot take, or anything that makes people think "wait, what?".',
+  'Rules:',
+  '- Return 3 to 8 moments, best first. Skip filler: fewer strong moments beat many weak ones.',
+  '- Each clip should be 15 to 60 seconds. Start a few seconds before the key line so it has context; end right after the payoff or on a cliffhanger.',
+  '- Only use times that appear in the transcript timestamps (or fall between them). Never invent a time beyond the transcript.',
+  '- "quote" must be words copied exactly from the transcript, at most 25 words. Never make up quotes or change what happened.',
+  '- Write 3 hook options per moment, each in a different style, at most 12 words, curiosity-driven: tease the payoff without giving it away, and stay true to what actually happens.',
+  '- "score" is 1 to 10: how likely this clip is to keep viewers watching to the end.',
+  '- Styles: shock, question, wait for it, confession, conflict, reveal, funny, emotional, hot take.',
+  lang==='th'?'- Write "title", "why" and the hook texts in natural Thai. Keep "style" values in English. Keep "quote" in the transcript\'s own language.':'- Write in English.',
+  'Reply with only a JSON array and no other text, for example:',
+  '[{"title":"He admits he got fired on live TV","start":"12:04","end":"12:41","score":9,"style":"confession","why":"One short sentence on why this hooks people.","quote":"exact words from the transcript","hooks":[{"style":"question","text":"What would you do if your boss saw this?"},{"style":"shock","text":"He said this on LIVE TV"},{"style":"wait for it","text":"Wait for his face at the end"}]}]',
+  '','TRANSCRIPT:',t].join('\n');
+}
+function cleanMoments(arr){
+  if(!Array.isArray(arr))arr=(arr&&Array.isArray(arr.moments))?arr.moments:[];
+  return arr.map(function(m){
+    if(!m||typeof m!=='object')return null;
+    var s=parseTime(String(m.start||'')),e=parseTime(String(m.end||''));
+    if(s===null||e===null||isNaN(s)||isNaN(e)||e<=s)return null;
+    var hooks=(Array.isArray(m.hooks)?m.hooks:[]).map(function(h){return typeof h==='string'?{style:'',text:h}:{style:String(h&&h.style||''),text:String(h&&h.text||'')};}).filter(function(h){return h.text.trim();}).slice(0,5);
+    var sc=Math.round(Number(m.score));sc=isNaN(sc)?null:Math.max(1,Math.min(10,sc));
+    return {id:nid(),title:String(m.title||'Untitled moment').slice(0,140),start:s,end:e,score:sc,style:String(m.style||''),why:String(m.why||'').slice(0,400),quote:String(m.quote||'').slice(0,300),hooks:hooks,pick:0,clipId:null};
+  }).filter(Boolean).sort(function(a,b){return (b.score||0)-(a.score||0);});
+}
+function busyAI(on){$('findBtn').disabled=on;$('findBtn').style.opacity=on?'.6':'1';$('stopBtn').style.display=on?'block':'none';$('transcript').disabled=on;}
+var AI_ERR={rate_limited:'Too many AI requests right now — wait a minute, then try again.',prompt_too_large:'That transcript is too long — paste the first half and try again.',invalid_json:'The AI’s answer didn’t come through properly. Tap Find the moments to try again.',empty_completion:'The AI’s answer didn’t come through properly. Tap Find the moments to try again.',refused:'The AI wouldn’t work on this transcript. Try a different video.',session_expired:'Sign in to Claude again, then try.'};
+async function findMoments(){
+  if(!curVideo())return;
+  var t=$('transcript').value.trim();
+  if(t.length<200){aiStatus('err','Paste the full transcript first — that looks too short.');return;}
+  saveTranscript();
+  if(!SAMPLE_READY){aiStatus('busy','Starting the AI…');try{SAMPLE=(window.claude&&window.claude.use)?await window.claude.use('sample'):null;}catch(e){SAMPLE=null;}SAMPLE_READY=true;}
+  if(!SAMPLE){aiUnavailable();return;}
+  var cut=t.length>MAXT,forVid=vid;aiCtl=new AbortController();busyAI(true);
+  aiStatus('busy','Reading the whole video for you… this can take up to a minute');
+  try{
+    var res=await SAMPLE.json(aiPrompt(cut?t.slice(0,MAXT):t),{signal:aiCtl.signal,cache:false,onText:function(){aiStatus('busy','Found some — writing the hooks…');}});
+    var ms=cleanMoments(res);
+    if(vid!==forVid)return;
+    if(!ms.length){aiStatus('err','The AI couldn’t find clear moments. Check the transcript has its timestamps, then try again.');return;}
+    patchVideo(function(v){v.moments=ms;v.foundAt=Date.now();});
+    aiStatus(cut?'note':'',cut?'Long video: only the first part of the transcript was checked.':'');
+    renderMoments();toast(lang==='th'?'พบ '+ms.length+' ช่วงเด็ด':ms.length+' moments found');
+  }catch(e){
+    var c=e&&e.code;
+    if(c==='cancelled'){aiStatus('','');}
+    else if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].indexOf(c)>-1){SAMPLE=null;aiUnavailable();}
+    else aiStatus('err',AI_ERR[c]||'Something went wrong talking to the AI. Try again.');
+  }finally{busyAI(false);aiCtl=null;if(!SAMPLE&&SAMPLE_READY)aiUnavailable();}
+}
+function scoreColor(s){return s>=8?['#5FE3BC','rgba(95,227,188,.15)']:s>=5?['#F0C33C','rgba(240,195,60,.14)']:['#8E9A9C','rgba(142,154,156,.14)'];}
+function renderMoments(){
+  var box=$('moments');box.innerHTML='';var v=curVideo();if(!v||!v.moments||!v.moments.length)return;
+  var hd=el('div','head');hd.style.margin='14px 0 0';
+  hd.appendChild(el('span',null,(lang==='th'?v.moments.length+' ช่วงเด็ด · ดีที่สุดก่อน':v.moments.length+' MOMENTS · BEST FIRST')));box.appendChild(hd);
+  v.moments.forEach(function(m){
+    var c=el('div','mo'+(m.clipId?' saved':'')),h=el('div','moh');
+    var col=scoreColor(m.score||0),sc=el('div','sc');sc.style.color=col[0];sc.style.background=col[1];
+    sc.appendChild(document.createTextNode(m.score!=null?String(m.score):'–'));sc.appendChild(el('small',null,'/10'));h.appendChild(sc);
+    var tx=el('div');tx.style.minWidth='0';tx.appendChild(el('div','mot',m.title));
+    var mm=el('div','mom');mm.appendChild(el('span','time',fmtTime(m.start)+'–'+fmtTime(m.end)+' · '+fmtLen(m.end-m.start)));
+    if(m.style)mm.appendChild(el('span','sty',m.style));tx.appendChild(mm);h.appendChild(tx);c.appendChild(h);
+    if(m.why)c.appendChild(el('p','why',m.why));
+    if(m.quote)c.appendChild(el('p','quote','“'+m.quote+'”'));
+    if(m.hooks.length){var hl=el('div','lab');hl.style.margin='10px 0 0';hl.textContent=T('Pick a hook');c.appendChild(hl);}
+    m.hooks.forEach(function(hk,i){
+      var b=el('button','hk'+(i===m.pick?' on':''));if(hk.style)b.appendChild(el('i',null,hk.style));b.appendChild(document.createTextNode(hk.text));
+      b.onclick=function(){patchVideo(function(v2){var x=v2.moments.filter(function(y){return y.id===m.id;})[0];if(x)x.pick=i;});renderMoments();};
+      c.appendChild(b);
+    });
+    var sv=el('button','full',T(m.clipId?'Saved as a clip ✓ — open':'Save as clip'));sv.style.marginTop='10px';
+    if(m.clipId)sv.className='full ghost';
+    sv.onclick=function(){if(m.clipId){if(load(CK).some(function(x){return x.id===m.clipId;})){goDetail(m.clipId);return;}}saveMoment(m.id);};
+    c.appendChild(sv);box.appendChild(c);
   });
 }
-
-function renderDetail(){
-  var videos = loadVideos();
-  var clips = loadClips();
-  var clip = clips.find(function(c){ return c.id===currentClipId; });
-  var video = clip ? videos.find(function(v){ return v.id===clip.videoId; }) : null;
-  document.getElementById('detailVideoName').textContent = video ? video.name : '';
-  document.getElementById('detailClipName').textContent = clip ? clip.label : '';
-  var btn = document.getElementById('exportBtn');
-  if(clip && clip.exported){ btn.textContent='Exported ✓'; btn.classList.add('exported'); }
-  else{ btn.textContent='Export clip'; btn.classList.remove('exported'); }
+function saveMoment(mid){
+  var v=curVideo();if(!v)return;var m=v.moments.filter(function(x){return x.id===mid;})[0];if(!m)return;
+  var cs=load(CK),name=m.title,n=2;
+  while(cs.some(function(c){return c.videoId===vid&&c.label.toLowerCase()===name.toLowerCase();}))name=m.title+' ('+(n++)+')';
+  var hk=m.hooks[m.pick]||m.hooks[0];
+  var clip={id:nid(),videoId:vid,label:name,savedAt:Date.now(),date:todayStr(),exported:false,start:m.start,end:m.end,hook:hk?hk.text:'',caption:'',tags:[],ai:{score:m.score,style:hk&&hk.style||m.style,why:m.why}};
+  cs.push(clip);store(CK,cs);
+  patchVideo(function(v2){var x=v2.moments.filter(function(y){return y.id===mid;})[0];if(x)x.clipId=clip.id;});
+  toast('Saved as a clip');renderReview();
 }
+$('aiIc').innerHTML=ic('spark',22,1.8);
+$('findBtn').onclick=findMoments;
+$('stopBtn').onclick=function(){if(aiCtl)aiCtl.abort();};
+$('transcript').oninput=function(){tInfo();if($('aiStatus').className.indexOf('err')>-1&&SAMPLE!==null)aiStatus('','');};
+$('transcript').onchange=saveTranscript;
 
-document.getElementById('saveBtn').addEventListener('click', function(){
-  var input=document.getElementById('videoInput');
-  var err=document.getElementById('errorMsg');
-  var val=input.value.trim();
-  if(!val || !isValidUrl(val)){ err.style.display='block'; return; }
-  err.style.display='none';
-  var records=loadVideos();
-  records.push({ id:newId(), name:val, savedAt:Date.now() });
-  saveVideos(records);
-  input.value='';
-  renderHome();
-});
-document.getElementById('videoInput').addEventListener('input', function(){ document.getElementById('errorMsg').style.display='none'; });
-document.getElementById('videoInput').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('saveBtn').click(); });
-
-document.getElementById('backHomeBtn').addEventListener('click', showHome);
-document.getElementById('backReviewBtn').addEventListener('click', function(){ showReview(currentVideoId); });
-
-document.getElementById('addClipBtn').addEventListener('click', function(){
-  var input=document.getElementById('clipInput');
-  var err=document.getElementById('clipErrorMsg');
-  var val=input.value.trim();
-  if(!val || currentVideoId===null) return;
-  var clips=loadClips();
-  var dup = clips.some(function(c){ return c.videoId===currentVideoId && c.label.trim().toLowerCase()===val.toLowerCase(); });
-  if(dup){ err.style.display='block'; return; }
-  err.style.display='none';
-  clips.push({ id:newId(), videoId:currentVideoId, label:val, savedAt:Date.now(), exported:false });
-  saveClips(clips);
-  input.value='';
-  renderReview();
-});
-document.getElementById('clipInput').addEventListener('input', function(){ document.getElementById('clipErrorMsg').style.display='none'; });
-document.getElementById('clipInput').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('addClipBtn').click(); });
-
-document.getElementById('exportBtn').addEventListener('click', function(){
-  var clips=loadClips();
-  var clip=clips.find(function(c){ return c.id===currentClipId; });
-  if(clip){ clip.exported=true; saveClips(clips); renderDetail(); }
-});
-
-showHome();
+goHome();applyLang();
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js').catch(function(){});}catch(e){}}
 </script>
 </body>
 </html>
