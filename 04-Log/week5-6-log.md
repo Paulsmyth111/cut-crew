@@ -47,7 +47,7 @@
 4. What one thing would make you use Cut Crew every day?
 5. How likely are you to use it again for real clipping? (1–5)
 
-"Copy & send to Paul" copies the answers and offers Open LINE / Open email, so the tester just pastes it to you.
+**Send feedback button:** one tap on Home opens an email to me (templevalleygeneticspauljr@gmail.com) with the subject **"Cut Crew feedback"** already filled in, so testers can moan easily. The 5-question form sends its answers to the same email. Proof: `05-Screenshots/2026-10-14-12-send-feedback-button.png` and `-13-feedback-form-email.png`.
 
 ## Tue 13 Oct — Readability + make it look like one thing ✅
 **The basics:** strong contrast, one font, big buttons, no walls of text.
