@@ -5,12 +5,10 @@
 ❌ "An AI clipping app."
 ✅ **"Find me the craziest bits of this video and tell me what to say at the start, so my clips get views without me watching the whole thing."**
 
-## Wed 7 Oct — Commit + screenshot
-GitHub isn't connected to Claude, so commit by hand:
-1. Open github.com → your **cut-crew** repo → **Add file → Upload files**
-2. Drag in: `index.html`, `manifest.webmanifest`, `sw.js`, `icon-180.png`, `icon-192.png`, `icon-512.png`
-3. Commit note: `Sprint 2: mark the moment, ready to post, AI moment finder, PWA`
-4. Screenshot for the log folder: `wk6.png` / `empty-screens.png` / `story2.png`
+## Commit + screenshot ✅
+- All of Sprint 2 committed to GitHub (`Paulsmyth111/cut-crew`) and merged into `main` — pull request #1
+- Screenshots of every screen in `05-Screenshots/` (home, new project, AI moments, clip list, ready to post, settings numbers, feedback form, Thai)
+- From now on: Claude commits and screenshots after every change
 
 ## Fri 9 Oct — Sprint 2 log entry (week 5)
 **What I built:**
