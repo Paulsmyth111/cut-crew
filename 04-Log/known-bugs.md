@@ -1,6 +1,6 @@
 # Cut Crew — Known bugs
 
-Last updated: Wed 14 Oct 2026
+Last updated: Fri 16 Oct 2026
 
 ## Open
 
@@ -13,13 +13,15 @@ Last updated: Wed 14 Oct 2026
 | 5 | Getting the transcript from YouTube is an extra manual step | Medium | Watch if testers manage it alone; auto-fetch needs a server |
 | 6 | The AI reads words only — a crazy moment with no talking can be missed | Medium | Needs video AI on a server, later |
 | 7 | Testers need a Claude account for the AI | Medium | Tell testers up front (tester-kit.md) |
-| 8 | Export saves a text file, not a cut video | High (long term) | Use the times in CapCut for now; auto-cut needs a server |
+| 8 | Video files have to be added again after closing the app (too big to keep) | Low | Keep it simple for now |
 | 9 | Upload File, 7 tool tiles, Learn and Community not built (marked SOON) | Low | Parked |
 
 ## Fixed
 
 | Bug | Fixed |
 |-----|-------|
+| No real clip video: Export only saved text. Now "Make clip video" cuts a vertical MP4 with the hook on it (needs the video file) | Fri 16 Oct |
+| Hard to get the transcript ("...more" not found) | Fri 16 Oct (picture guide) |
 | Words breaking mid-word in small text | Wed 14 Oct |
 | Low-contrast grey text, small buttons, iPhone zoom on text boxes | Wed 14 Oct |
 | "Coming soon" dead ends on the main tiles and Fetch Caption | Wed 14 Oct |

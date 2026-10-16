@@ -143,6 +143,20 @@
   .mock.dark .box2{border:1px solid var(--line);border-radius:8px;padding:8px;color:#C9D2D1;line-height:1.5;min-height:70px}
   .mock.dark .btn2{margin-top:8px;background:var(--teal);color:#062018;font-weight:800;text-align:center;border-radius:8px;padding:9px}
   .mock .phone{width:150px;margin:0 auto;background:#fff;border:6px solid #1d2224;border-radius:20px;padding:8px;min-height:180px}
+  .stepbar{display:flex;gap:6px;margin:6px 0 14px}
+  .stepbar div{flex:1;border-radius:10px;padding:8px 6px;background:var(--surf);border:1px solid var(--line);text-align:center;font-size:12px;font-weight:700;color:var(--muted);line-height:1.25}
+  .stepbar div.done{border-color:var(--teal);color:var(--teal);background:rgba(95,227,188,.08)}
+  .stepbar div.now{border-color:#F0C33C;color:#F0C33C}
+  .sh{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+  .sh .num{width:34px;height:34px;border-radius:50%;background:var(--teal);color:#062018;font-weight:900;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .sh b{font-size:17px}.sh p{margin:3px 0 0;font-size:13px;color:#C9D2D1;line-height:1.4}
+  .stepc{border-color:rgba(95,227,188,.35)}
+  details.more summary{cursor:pointer;color:var(--teal);font-weight:600;font-size:14px}
+  .vok{margin-top:10px;font-size:13px;color:var(--teal);font-weight:600;overflow-wrap:anywhere}
+  .vwarn{margin-top:10px;font-size:13px;color:#F0C33C;line-height:1.4}
+  .prog{height:12px;border-radius:6px;background:var(--bg);border:1px solid var(--line);overflow:hidden;margin:14px 0 8px}
+  .prog i{display:block;height:100%;width:0;background:var(--teal);transition:width .2s}
+  .cprev{width:100%;max-height:60vh;border-radius:12px;background:#000;display:block;margin:10px auto}
   .tile{position:relative}
   .tile.soon{opacity:.38}
   .tile em{position:absolute;top:5px;right:5px;font-style:normal;font-size:7.5px;font-weight:800;letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 3px}
@@ -227,13 +241,22 @@
 
   <section id="reviewScreen" class="pane" style="display:none">
     <button class="ghost" id="backHomeBtn" style="margin-bottom:14px">&larr; Back</button>
-    <h2>Review clips</h2>
-    <input id="reviewVideoName" data-dyn type="text" style="margin-bottom:6px">
-    <div id="reviewNameErr" data-dyn class="error"></div>
-    <button class="ghost" id="renameVideoBtn" style="margin-bottom:10px">Save link</button>
-    <div id="watchBox" data-dyn style="margin-bottom:14px"></div>
+    <h2>Make clips</h2>
+    <div class="stepbar" id="stepBar" data-dyn></div>
+    <div class="box stepc" id="step1">
+      <div class="sh"><span class="num">1</span><div><b>Add the video file</b><p>The same video, saved on your phone or laptop. Cut Crew cuts the clips out of it.</p></div></div>
+      <input type="file" id="vidFile" accept="video/*" style="display:none">
+      <button class="full" id="vidPick">Choose video file</button>
+      <div id="vidInfo" data-dyn></div>
+      <details class="more"><summary>YouTube link &amp; thumbnail</summary>
+        <input id="reviewVideoName" data-dyn type="text" style="margin:10px 0 6px">
+        <div id="reviewNameErr" data-dyn class="error"></div>
+        <button class="ghost" id="renameVideoBtn" style="margin-bottom:10px">Save link</button>
+        <div id="watchBox" data-dyn></div>
+      </details>
+    </div>
     <div class="box ai">
-      <div class="aih"><span id="aiIc"></span><div><div class="ait">AI moment finder</div><div class="ais">Finds the shocking, intriguing &ldquo;wait, what?&rdquo; parts for you</div></div></div>
+      <div class="sh"><span class="num">2</span><div><b>Find the moments</b><p>Paste the transcript. The AI finds the shocking, &ldquo;wait, what?&rdquo; parts and writes the hooks.</p></div></div><span id="aiIc" style="display:none"></span>
       <button class="guideBtn" id="guideBtn" type="button"><span>?</span>How do I get the transcript? <b>See picture guide</b></button>
       <textarea id="transcript" rows="4" placeholder="Paste the video's transcript here, with the timestamps"></textarea>
       <div id="tInfo" data-dyn class="cnt"></div>
@@ -241,14 +264,17 @@
       <div id="aiStatus" data-dyn class="aist"></div>
       <div id="moments" data-dyn></div>
     </div>
-    <div class="box">
-      <div class="lab" style="margin-top:0">Mark a moment</div>
+    <div class="box stepc" id="step3">
+      <div class="sh"><span class="num">3</span><div><b>Make the clips</b><p>Tap <b>Make clip video</b> on a moment above, or on a clip below. You get a vertical video with the hook on it, ready to post.</p></div></div>
+    </div>
+    <details class="box more" id="manualBox"><summary>Or mark a moment yourself</summary>
+      <div style="height:10px"></div>
       <input id="clipInput" type="text" placeholder="Name a clip, e.g. funny moment" style="margin-bottom:8px">
       <div class="tr"><input id="clipStart" type="text" inputmode="numeric" placeholder="Start, e.g. 2:14"><input id="clipEnd" type="text" inputmode="numeric" placeholder="End, e.g. 2:45"></div>
       <div id="addLen" data-dyn class="len"></div>
       <div class="improw" style="margin:8px 0 0"><input id="clipDate" type="date"><button id="addClipBtn">Save</button></div>
       <div id="clipErrorMsg" data-dyn class="error"></div>
-    </div>
+    </details>
     <div class="list" id="clipList" data-dyn style="margin-top:16px"></div>
     <div id="clipEmptyMsg" data-dyn></div>
     <div id="videoDelete" data-dyn style="margin-top:22px"></div>
@@ -327,7 +353,8 @@
     </div>
     <div id="detailErr" data-dyn class="error"></div>
     <button class="full ghost" id="renameBtn" style="margin-top:8px">Save changes</button>
-    <button class="full" id="exportBtn" data-dyn style="margin-top:14px">Export clip</button>
+    <button class="full" id="makeVidBtn" style="margin-top:14px">Make clip video</button>
+    <button class="full ghost" id="exportBtn" data-dyn style="margin-top:8px">Export clip</button>
     <div id="clipDelete" data-dyn style="margin-top:22px"></div>
   </section>
 </div>
@@ -340,6 +367,7 @@
     <div class="gnav"><button class="ghost" id="gPrev">← Back</button><button id="gNext">Next →</button></div>
   </div>
 </div>
+<div class="gmod" id="cmod" data-dyn style="display:none" role="dialog" aria-modal="true"><div class="gbox" id="cbox"></div></div>
 <div class="toast" id="toast" data-dyn></div>
 <nav><div class="ni" id="nav"></div></nav>
 
@@ -368,7 +396,7 @@ function ic(n,s,w){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24"
 var VK='cutcrew_v0_records',CK='cutcrew_v0_clips',vid=null,cid=null,tt=null,showAll=false;
 var TH={"TURN CLIPS INTO STORIES": "เปลี่ยนคลิปให้เป็นเรื่องราว", "Every idea": "ทุกไอเดีย", "is a hook": "คือฮุกดึงคนดู", "Stop scrolling. Start posting.": "เลิกเลื่อนดู เริ่มโพสต์กันเลย", "IMPORT": "นำเข้า", "Import": "นำเข้า", "Paste URL": "วางลิงก์", "Upload File": "อัปโหลดไฟล์", "Fetch Caption": "ดึงคำบรรยาย", "RECENT PROJECTS": "โปรเจกต์ล่าสุด", "← Back": "← กลับ", "← Back to clips": "← กลับไปที่คลิป", "Review clips": "ตรวจสอบคลิป", "Save": "บันทึก", "No clips for this video yet.": "ยังไม่มีคลิปสำหรับวิดีโอนี้", "Clip detail": "รายละเอียดคลิป", "Clip name": "ชื่อคลิป", "Save name": "บันทึกชื่อ", "Export clip": "ส่งออกคลิป", "Home": "หน้าหลัก", "Projects": "โปรเจกต์", "Learn": "เรียนรู้", "Community": "ชุมชน", "Trim & select": "ตัดและเลือก", "Rearrange": "จัดลำดับใหม่", "Captions": "คำบรรยาย", "Style & pacing": "สไตล์และจังหวะ", "AI metadata": "เมทาดาทา AI", "Voice & translation": "เสียงและการแปล", "Visuals": "ภาพ", "Export": "ส่งออก", "Voice & visuals": "เสียงและภาพ", "Growth & trends": "การเติบโตและเทรนด์", "Collab": "ทำงานร่วมกัน", "Settings": "ตั้งค่า", "Paste a YouTube video or stream link": "วางลิงก์วิดีโอ YouTube หรือไลฟ์สตรีม", "Search your projects": "ค้นหาโปรเจกต์ของคุณ", "Name a clip, e.g. funny moment 2:14": "ตั้งชื่อคลิป เช่น ช่วงตลก 2:14", "Good morning": "สวัสดีตอนเช้า", "Good afternoon": "สวัสดีตอนบ่าย", "Good evening": "สวัสดีตอนเย็น", "SHOW LESS": "แสดงน้อยลง", "SEE ALL": "ดูทั้งหมด", "No projects match that search.": "ไม่พบโปรเจกต์ที่ตรงกับคำค้นหา", "No projects yet. Paste a link in the Import box to start.": "ยังไม่มีโปรเจกต์ วางลิงก์ในช่องนำเข้าเพื่อเริ่มต้น", "clip": "คลิป", "clips": "คลิป", "Exported": "ส่งออกแล้ว", "Delete this video": "ลบวิดีโอนี้", "Delete this clip": "ลบคลิปนี้", "Are you sure? This can’t be undone.": "แน่ใจไหม? การลบนี้ย้อนกลับไม่ได้", "Yes, delete": "ใช่ ลบเลย", "Cancel": "ยกเลิก", "Video deleted": "ลบวิดีโอแล้ว", "Clip deleted": "ลบคลิปแล้ว", "Video imported": "นำเข้าวิดีโอแล้ว", "Marked as exported": "ทำเครื่องหมายว่าส่งออกแล้ว", "Name saved": "บันทึกชื่อแล้ว", "That doesn’t look like a link. Paste the full address starting with http:// or https://": "ลิงก์นี้ดูไม่ถูกต้อง วางที่อยู่แบบเต็มที่ขึ้นต้นด้วย http:// หรือ https://", "You already imported that video.": "คุณนำเข้าวิดีโอนี้ไปแล้ว", "You already have a clip with that name on this video.": "คุณมีคลิปชื่อนี้ในวิดีโอนี้อยู่แล้ว", "A clip needs a name.": "คลิปต้องมีชื่อ", "Another clip on this video already has that name.": "มีคลิปอื่นในวิดีโอนี้ที่ใช้ชื่อนี้แล้ว", "Watch on YouTube \u2192": "ดูบน YouTube \u2192", "Player blocked here \u2014 watch on YouTube \u2192": "เล่นที่นี่ไม่ได้ \u2014 ไปดูบน YouTube \u2192", "Can\u2019t save \u2014 you may be in private/incognito mode": "บันทึกไม่ได้ \u2014 อาจอยู่ในโหมดส่วนตัว", "Copy video link": "คัดลอกลิงก์วิดีโอ", "Open it in another tab or on your phone, and note the times of the best bits.": "เปิดในแท็บอื่นหรือในมือถือ แล้วจดเวลาช่วงที่ดีที่สุด", "Copied \u2713": "คัดลอกแล้ว \u2713", "Couldn\u2019t copy \u2014 long-press the link to copy it": "คัดลอกไม่ได้ \u2014 กดค้างที่ลิงก์เพื่อคัดลอก", "Paste it into a new tab to watch \u2014 this app can\u2019t open or play it directly.": "วางในแท็บใหม่เพื่อดู \u2014 แอปนี้เปิดหรือเล่นโดยตรงไม่ได้"};
 var TH2={"Mark a moment":"มาร์กช่วงเด็ด","Name a clip, e.g. funny moment":"ตั้งชื่อคลิป เช่น ช่วงตลก","Start, e.g. 2:14":"เริ่ม เช่น 2:14","End, e.g. 2:45":"จบ เช่น 2:45","Start and end":"เวลาเริ่มและจบ","Clip length":"ความยาวคลิป","Add both a start and an end time.":"ใส่ทั้งเวลาเริ่มและเวลาจบ","Write times like 2:14 or 1:02:14.":"เขียนเวลาแบบ 2:14 หรือ 1:02:14","The end has to be after the start.":"เวลาจบต้องอยู่หลังเวลาเริ่ม","Over 60s — may be too long for Shorts":"เกิน 60 วิ — อาจยาวเกินไปสำหรับ Shorts","Ready to post":"พร้อมโพสต์","Hook — first line on screen":"ฮุก — ประโยคแรกบนจอ","Caption":"แคปชัน","Hashtags":"แฮชแท็ก","Copy post text":"คัดลอกข้อความโพสต์","Save changes":"บันทึกการเปลี่ยนแปลง","Changes saved":"บันทึกแล้ว","Clip saved":"บันทึกคลิปแล้ว","Hook ready":"ฮุกพร้อม","characters — keep it readable in 2 seconds":"ตัวอักษร — ให้อ่านจบใน 2 วินาที","characters":"ตัวอักษร","hashtag":"แฮชแท็ก","hashtags":"แฮชแท็ก","aim for 5–10":"แนะนำ 5–10 อัน","Write a hook, caption or hashtags first":"เขียนฮุก แคปชัน หรือแฮชแท็กก่อน","No projects yet":"ยังไม่มีโปรเจกต์","Paste a YouTube link in the Import box above and Cut Crew turns it into a project you can clip.":"วางลิงก์ YouTube ในช่องนำเข้าด้านบน แล้ว Cut Crew จะสร้างเป็นโปรเจกต์ให้คุณตัดคลิป","Paste a link":"วางลิงก์","Mark the best moments":"มาร์กช่วงที่ดีที่สุด","Write the hook & export":"เขียนฮุกแล้วส่งออก","Paste your first link":"วางลิงก์แรกของคุณ","No clips yet":"ยังไม่มีคลิป","Watch the video, then mark your first moment above: give it a name, a start and an end time, and tap Save.":"ดูวิดีโอ แล้วมาร์กช่วงแรกด้านบน: ตั้งชื่อ ใส่เวลาเริ่มและจบ แล้วกดบันทึก","Mark your first moment":"มาร์กช่วงแรกของคุณ","Date":"วันที่","Save link":"บันทึกลิงก์","Link saved":"บันทึกลิงก์แล้ว","Back up your videos and clips to a file, or restore from one.":"สำรองวิดีโอและคลิปเป็นไฟล์ หรือกู้คืนจากไฟล์","Backup":"สำรองข้อมูล","Saves everything in this app right now to a file you can keep.":"บันทึกทุกอย่างในแอปตอนนี้เป็นไฟล์ที่เก็บไว้ได้","Download backup":"ดาวน์โหลดไฟล์สำรอง","Restore":"กู้คืน","Loads a backup file back in. This replaces everything currently in the app.":"โหลดไฟล์สำรองกลับเข้ามา ข้อมูลทั้งหมดในแอปตอนนี้จะถูกแทนที่","Choose backup file":"เลือกไฟล์สำรอง","Replace everything currently in the app with this backup? This can’t be undone.":"แทนที่ทุกอย่างในแอปด้วยไฟล์สำรองนี้? ย้อนกลับไม่ได้","Yes, restore":"ใช่ กู้คืน","Restore complete":"กู้คืนเสร็จแล้ว","Backup downloaded":"ดาวน์โหลดไฟล์สำรองแล้ว","Couldn’t save the backup file here":"บันทึกไฟล์สำรองที่นี่ไม่ได้","That file isn’t a valid backup.":"ไฟล์นี้ไม่ใช่ไฟล์สำรองที่ถูกต้อง","Couldn’t read that file.":"อ่านไฟล์นี้ไม่ได้","Marked as exported (file save unavailable here)":"ทำเครื่องหมายว่าส่งออกแล้ว (บันทึกไฟล์ที่นี่ไม่ได้)"};
-var TH3={"See picture guide":"ดูคู่มือภาพ","Get the transcript":"เอาทรานสคริปต์","On a laptop (easiest)":"บนแล็ปท็อป (ง่ายที่สุด)","On a phone":"บนมือถือ","STEP":"ขั้นตอน","Next":"ถัดไป","Got it — paste it in":"เข้าใจแล้ว — วางเลย","← Back":"← กลับ","Send to Paul by email":"ส่งอีเมลถึง Paul","Email Paul again":"ส่งอีเมลถึง Paul อีกครั้ง","Your email app should open with this ready to send to Paul. If it doesn\u2019t, copy the text below and email it to ":"แอปอีเมลจะเปิดพร้อมข้อความให้ส่งถึง Paul ถ้าไม่เปิด ให้คัดลอกข้อความด้านล่างแล้วส่งอีเมลไปที่ ","Something annoying? Tell Paul. One tap opens an email to him.":"มีอะไรน่ารำคาญ? บอก Paul กดครั้งเดียวเปิดอีเมลถึงเขา","Hi Paul, here\u2019s my feedback on Cut Crew:":"สวัสดี Paul นี่คือฟีดแบ็กเรื่อง Cut Crew:","What I liked:":"สิ่งที่ชอบ:","What annoyed me:":"สิ่งที่น่ารำคาญ:","What I wish it did:":"สิ่งที่อยากให้ทำได้:","Install Cut Crew on your iPhone":"ติดตั้ง Cut Crew บน iPhone","Share":"แชร์","Add to Home Screen":"เพิ่มไปยังหน้าจอโฮม","Your numbers, feedback, and backups.":"ตัวเลขของคุณ ฟีดแบ็ก และการสำรองข้อมูล","Your numbers":"ตัวเลขของคุณ","Videos imported":"วิดีโอที่นำเข้า","AI moments found":"ช่วงเด็ดที่ AI พบ","Clips saved":"คลิปที่บันทึก","Clips from AI":"คลิปจาก AI","Hooks written":"ฮุกที่เขียน","Clips exported":"คลิปที่ส่งออก","Feedback":"ฟีดแบ็ก","Tell Paul what worked and what didn’t. 5 quick questions.":"บอก Paul ว่าอะไรใช้ได้ อะไรไม่ได้ 5 คำถามสั้นๆ","Send feedback":"ส่งฟีดแบ็ก","5 quick questions. Be honest — bad news helps the most.":"5 คำถามสั้นๆ ตอบตรงๆ — ข่าวร้ายช่วยได้มากที่สุด","1. Did the AI find moments you’d actually post?":"1. AI หาช่วงที่คุณจะโพสต์จริงๆ เจอไหม?","2. What was confusing or annoying?":"2. อะไรที่งงหรือน่ารำคาญ?","3. How long did it take you to get one clip ready to post?":"3. ใช้เวลานานแค่ไหนกว่าจะได้คลิปพร้อมโพสต์หนึ่งคลิป?","4. What one thing would make you use Cut Crew every day?":"4. อะไรหนึ่งอย่างที่จะทำให้คุณใช้ Cut Crew ทุกวัน?","5. How likely are you to use it again for real clipping?":"5. มีโอกาสแค่ไหนที่คุณจะใช้อีกเพื่อตัดคลิปจริง?","Your name (optional)":"ชื่อของคุณ (ไม่บังคับ)","e.g. about 5 minutes":"เช่น ประมาณ 5 นาที","Copy & send to Paul":"คัดลอกและส่งให้ Paul","Yes":"ใช่","Some":"บางส่วน","No":"ไม่","Didn’t try AI":"ไม่ได้ลอง AI","Answer at least one question first.":"ตอบอย่างน้อยหนึ่งข้อก่อน","Copied ✓ Now paste it in LINE or WhatsApp to Paul.":"คัดลอกแล้ว ✓ วางใน LINE หรือ WhatsApp ส่งให้ Paul","Couldn’t copy automatically — select the text below and copy it to Paul.":"คัดลอกอัตโนมัติไม่ได้ — เลือกข้อความด้านล่างแล้วคัดลอกส่งให้ Paul","Open LINE":"เปิด LINE","Open email":"เปิดอีเมล","Trying Cut Crew? Tell Paul what you think.":"กำลังลอง Cut Crew? บอก Paul ว่าคิดยังไง","AI moments":"AI หาช่วงเด็ด","Import a video first":"นำเข้าวิดีโอก่อน","Save a clip first":"บันทึกคลิปก่อน","SOON":"เร็วๆ นี้","Upload File (soon)":"อัปโหลดไฟล์ (เร็วๆ นี้)","AI moment finder":"AI หาช่วงเด็ด","Finds the shocking, intriguing “wait, what?” parts for you":"หาช่วงช็อก ช่วงน่าสงสัย แบบ “เดี๋ยวนะ อะไรนะ?” ให้คุณ","How do I get the transcript?":"เอาทรานสคริปต์มาจากไหน?","Open the video on YouTube":"เปิดวิดีโอใน YouTube","Paste it below":"วางด้านล่าง","Paste the video's transcript here, with the timestamps":"วางทรานสคริปต์ของวิดีโอที่นี่ พร้อมเวลา","Find the moments":"หาช่วงเด็ด","Stop":"หยุด","timestamps found":"เวลาที่พบ","No timestamps found — copy the transcript with the times showing":"ไม่พบเวลา — คัดลอกทรานสคริปต์แบบที่มีเวลาด้วย","Paste the full transcript first — that looks too short.":"วางทรานสคริปต์ทั้งหมดก่อน — อันนี้ดูสั้นเกินไป","Starting the AI…":"กำลังเริ่ม AI…","Reading the whole video for you… this can take up to a minute":"กำลังอ่านวิดีโอทั้งหมดให้คุณ… อาจใช้เวลาถึงหนึ่งนาที","Found some — writing the hooks…":"เจอแล้ว — กำลังเขียนฮุก…","The AI couldn’t find clear moments. Check the transcript has its timestamps, then try again.":"AI หาช่วงเด็ดที่ชัดเจนไม่เจอ ตรวจดูว่าทรานสคริปต์มีเวลา แล้วลองใหม่","Long video: only the first part of the transcript was checked.":"วิดีโอยาว: ตรวจเฉพาะส่วนแรกของทรานสคริปต์","The AI moment finder only works when Cut Crew is opened inside the Claude app, with AI allowed.":"AI หาช่วงเด็ดใช้ได้เฉพาะเมื่อเปิด Cut Crew ในแอป Claude และอนุญาตให้ใช้ AI","Too many AI requests right now — wait a minute, then try again.":"ใช้ AI บ่อยเกินไป — รอสักนาทีแล้วลองใหม่","That transcript is too long — paste the first half and try again.":"ทรานสคริปต์ยาวเกินไป — วางครึ่งแรกแล้วลองใหม่","The AI’s answer didn’t come through properly. Tap Find the moments to try again.":"คำตอบของ AI มาไม่ครบ กด หาช่วงเด็ด เพื่อลองใหม่","The AI wouldn’t work on this transcript. Try a different video.":"AI ทำงานกับทรานสคริปต์นี้ไม่ได้ ลองวิดีโออื่น","Sign in to Claude again, then try.":"ลงชื่อเข้า Claude ใหม่ แล้วลองอีกครั้ง","Something went wrong talking to the AI. Try again.":"เชื่อมต่อ AI ไม่สำเร็จ ลองใหม่","Pick a hook":"เลือกฮุก","Save as clip":"บันทึกเป็นคลิป","Saved as a clip ✓ — open":"บันทึกเป็นคลิปแล้ว ✓ — เปิด","Saved as a clip":"บันทึกเป็นคลิปแล้ว"};
+var TH3={"Your clips will show up here.":"คลิปของคุณจะแสดงที่นี่","Make clips": "สร้างคลิป", "Add the video file": "เพิ่มไฟล์วิดีโอ", "The same video, saved on your phone or laptop. Cut Crew cuts the clips out of it.": "วิดีโอเดียวกันที่เก็บในมือถือหรือแล็ปท็อป Cut Crew จะตัดคลิปออกมาจากไฟล์นี้", "Choose video file": "เลือกไฟล์วิดีโอ", "Change video file": "เปลี่ยนไฟล์วิดีโอ", "YouTube link & thumbnail": "ลิงก์ YouTube และภาพปก", "Make the clips": "สร้างคลิป", "Make clip video": "สร้างวิดีโอคลิป", "Or mark a moment yourself": "หรือมาร์กช่วงเองก็ได้", "1. Video file": "1. ไฟล์วิดีโอ", "2. Find moments": "2. หาช่วงเด็ด", "3. Make clips": "3. สร้างคลิป", "long": "ยาว", "You added": "คุณเคยเพิ่ม", "before. Add it again: video files aren’t kept after you close the app.": "ไว้แล้ว เพิ่มอีกครั้ง: ไฟล์วิดีโอจะไม่ถูกเก็บหลังปิดแอป", "Video added": "เพิ่มวิดีโอแล้ว", "Step 1 first: add the video file": "ทำขั้นที่ 1 ก่อน: เพิ่มไฟล์วิดีโอ", "This clip needs a start and end time": "คลิปนี้ต้องมีเวลาเริ่มและจบ", "Making your clip…": "กำลังสร้างคลิป…", "Keep this screen open. It takes as long as the clip:": "เปิดหน้าจอนี้ไว้ ใช้เวลาเท่าความยาวคลิป:", "Your clip is ready": "คลิปพร้อมแล้ว", "Download clip": "ดาวน์โหลดคลิป", "Then post it on TikTok, Reels or Shorts.": "แล้วโพสต์ลง TikTok, Reels หรือ Shorts", "Your hook is already on the video.": "ฮุกอยู่บนวิดีโอแล้ว", "Clip downloaded": "ดาวน์โหลดคลิปแล้ว", "Couldn’t make the clip": "สร้างคลิปไม่สำเร็จ", "Cancelled": "ยกเลิกแล้ว", "Find the moments": "หาช่วงเด็ด","See picture guide":"ดูคู่มือภาพ","Get the transcript":"เอาทรานสคริปต์","On a laptop (easiest)":"บนแล็ปท็อป (ง่ายที่สุด)","On a phone":"บนมือถือ","STEP":"ขั้นตอน","Next":"ถัดไป","Got it — paste it in":"เข้าใจแล้ว — วางเลย","← Back":"← กลับ","Send to Paul by email":"ส่งอีเมลถึง Paul","Email Paul again":"ส่งอีเมลถึง Paul อีกครั้ง","Your email app should open with this ready to send to Paul. If it doesn\u2019t, copy the text below and email it to ":"แอปอีเมลจะเปิดพร้อมข้อความให้ส่งถึง Paul ถ้าไม่เปิด ให้คัดลอกข้อความด้านล่างแล้วส่งอีเมลไปที่ ","Something annoying? Tell Paul. One tap opens an email to him.":"มีอะไรน่ารำคาญ? บอก Paul กดครั้งเดียวเปิดอีเมลถึงเขา","Hi Paul, here\u2019s my feedback on Cut Crew:":"สวัสดี Paul นี่คือฟีดแบ็กเรื่อง Cut Crew:","What I liked:":"สิ่งที่ชอบ:","What annoyed me:":"สิ่งที่น่ารำคาญ:","What I wish it did:":"สิ่งที่อยากให้ทำได้:","Install Cut Crew on your iPhone":"ติดตั้ง Cut Crew บน iPhone","Share":"แชร์","Add to Home Screen":"เพิ่มไปยังหน้าจอโฮม","Your numbers, feedback, and backups.":"ตัวเลขของคุณ ฟีดแบ็ก และการสำรองข้อมูล","Your numbers":"ตัวเลขของคุณ","Videos imported":"วิดีโอที่นำเข้า","AI moments found":"ช่วงเด็ดที่ AI พบ","Clips saved":"คลิปที่บันทึก","Clips from AI":"คลิปจาก AI","Hooks written":"ฮุกที่เขียน","Clips exported":"คลิปที่ส่งออก","Feedback":"ฟีดแบ็ก","Tell Paul what worked and what didn’t. 5 quick questions.":"บอก Paul ว่าอะไรใช้ได้ อะไรไม่ได้ 5 คำถามสั้นๆ","Send feedback":"ส่งฟีดแบ็ก","5 quick questions. Be honest — bad news helps the most.":"5 คำถามสั้นๆ ตอบตรงๆ — ข่าวร้ายช่วยได้มากที่สุด","1. Did the AI find moments you’d actually post?":"1. AI หาช่วงที่คุณจะโพสต์จริงๆ เจอไหม?","2. What was confusing or annoying?":"2. อะไรที่งงหรือน่ารำคาญ?","3. How long did it take you to get one clip ready to post?":"3. ใช้เวลานานแค่ไหนกว่าจะได้คลิปพร้อมโพสต์หนึ่งคลิป?","4. What one thing would make you use Cut Crew every day?":"4. อะไรหนึ่งอย่างที่จะทำให้คุณใช้ Cut Crew ทุกวัน?","5. How likely are you to use it again for real clipping?":"5. มีโอกาสแค่ไหนที่คุณจะใช้อีกเพื่อตัดคลิปจริง?","Your name (optional)":"ชื่อของคุณ (ไม่บังคับ)","e.g. about 5 minutes":"เช่น ประมาณ 5 นาที","Copy & send to Paul":"คัดลอกและส่งให้ Paul","Yes":"ใช่","Some":"บางส่วน","No":"ไม่","Didn’t try AI":"ไม่ได้ลอง AI","Answer at least one question first.":"ตอบอย่างน้อยหนึ่งข้อก่อน","Copied ✓ Now paste it in LINE or WhatsApp to Paul.":"คัดลอกแล้ว ✓ วางใน LINE หรือ WhatsApp ส่งให้ Paul","Couldn’t copy automatically — select the text below and copy it to Paul.":"คัดลอกอัตโนมัติไม่ได้ — เลือกข้อความด้านล่างแล้วคัดลอกส่งให้ Paul","Open LINE":"เปิด LINE","Open email":"เปิดอีเมล","Trying Cut Crew? Tell Paul what you think.":"กำลังลอง Cut Crew? บอก Paul ว่าคิดยังไง","AI moments":"AI หาช่วงเด็ด","Import a video first":"นำเข้าวิดีโอก่อน","Save a clip first":"บันทึกคลิปก่อน","SOON":"เร็วๆ นี้","Upload File (soon)":"อัปโหลดไฟล์ (เร็วๆ นี้)","AI moment finder":"AI หาช่วงเด็ด","Finds the shocking, intriguing “wait, what?” parts for you":"หาช่วงช็อก ช่วงน่าสงสัย แบบ “เดี๋ยวนะ อะไรนะ?” ให้คุณ","How do I get the transcript?":"เอาทรานสคริปต์มาจากไหน?","Open the video on YouTube":"เปิดวิดีโอใน YouTube","Paste it below":"วางด้านล่าง","Paste the video's transcript here, with the timestamps":"วางทรานสคริปต์ของวิดีโอที่นี่ พร้อมเวลา","Find the moments":"หาช่วงเด็ด","Stop":"หยุด","timestamps found":"เวลาที่พบ","No timestamps found — copy the transcript with the times showing":"ไม่พบเวลา — คัดลอกทรานสคริปต์แบบที่มีเวลาด้วย","Paste the full transcript first — that looks too short.":"วางทรานสคริปต์ทั้งหมดก่อน — อันนี้ดูสั้นเกินไป","Starting the AI…":"กำลังเริ่ม AI…","Reading the whole video for you… this can take up to a minute":"กำลังอ่านวิดีโอทั้งหมดให้คุณ… อาจใช้เวลาถึงหนึ่งนาที","Found some — writing the hooks…":"เจอแล้ว — กำลังเขียนฮุก…","The AI couldn’t find clear moments. Check the transcript has its timestamps, then try again.":"AI หาช่วงเด็ดที่ชัดเจนไม่เจอ ตรวจดูว่าทรานสคริปต์มีเวลา แล้วลองใหม่","Long video: only the first part of the transcript was checked.":"วิดีโอยาว: ตรวจเฉพาะส่วนแรกของทรานสคริปต์","The AI moment finder only works when Cut Crew is opened inside the Claude app, with AI allowed.":"AI หาช่วงเด็ดใช้ได้เฉพาะเมื่อเปิด Cut Crew ในแอป Claude และอนุญาตให้ใช้ AI","Too many AI requests right now — wait a minute, then try again.":"ใช้ AI บ่อยเกินไป — รอสักนาทีแล้วลองใหม่","That transcript is too long — paste the first half and try again.":"ทรานสคริปต์ยาวเกินไป — วางครึ่งแรกแล้วลองใหม่","The AI’s answer didn’t come through properly. Tap Find the moments to try again.":"คำตอบของ AI มาไม่ครบ กด หาช่วงเด็ด เพื่อลองใหม่","The AI wouldn’t work on this transcript. Try a different video.":"AI ทำงานกับทรานสคริปต์นี้ไม่ได้ ลองวิดีโออื่น","Sign in to Claude again, then try.":"ลงชื่อเข้า Claude ใหม่ แล้วลองอีกครั้ง","Something went wrong talking to the AI. Try again.":"เชื่อมต่อ AI ไม่สำเร็จ ลองใหม่","Pick a hook":"เลือกฮุก","Save as clip":"บันทึกเป็นคลิป","Saved as a clip ✓ — open":"บันทึกเป็นคลิปแล้ว ✓ — เปิด","Saved as a clip":"บันทึกเป็นคลิปแล้ว"};
 for(var k3 in TH3)TH2[k3]=TH3[k3];
 for(var k2 in TH2)TH[k2]=TH2[k2];
 var lang='en';try{lang=localStorage.getItem('cutcrew_lang')==='th'?'th':'en';}catch(e){}
@@ -510,10 +538,11 @@ function emptyState(icon,title,text,steps,btnLabel,onBtn){
 }
 function renderReview(){
   var v=load(VK).filter(function(x){return x.id===vid;})[0];$('reviewVideoName').value=v?v.name:'';$('reviewNameErr').style.display='none';renderWatch(v?v.name:'');
+  renderStep1();
   if(!aiCtl){$('transcript').value=v&&v.transcript||'';tInfo();renderMoments();if(SAMPLE_READY&&!SAMPLE)aiUnavailable();else aiStatus('','');}
   var cs=load(CK).filter(function(c){return c.videoId===vid;}).reverse(),l=$('clipList');l.innerHTML='';
   var em=$('clipEmptyMsg');em.innerHTML='';
-  if(!cs.length)em.appendChild(emptyState('scissors','No clips yet','Watch the video, then mark your first moment above: give it a name, a start and an end time, and tap Save.',null,'Mark your first moment',function(){$('clipInput').focus();}));
+  if(!cs.length)em.appendChild(el('div','empty',T('Your clips will show up here.')));
   if(!$('clipDate').value)$('clipDate').value=todayStr();
   cs.forEach(function(c){var d=el('div','card'),b=el('div','cb'),k=el('div');k.style.minWidth='0';k.appendChild(el('div','cn',c.label));
     var m=el('div','cm');
@@ -658,7 +687,7 @@ async function saveFile(filename,text){
     }
   }catch(e){ /* fall through to the blob method below */ }
   try{
-    var blob=new Blob([text],{type:'text/plain'});
+    var blob=(text instanceof Blob)?text:new Blob([text],{type:'text/plain'});
     var url=URL.createObjectURL(blob);
     var a=document.createElement('a');a.href=url;a.download=filename;
     document.body.appendChild(a);a.click();document.body.removeChild(a);
@@ -713,6 +742,93 @@ function renderSettings(){
   };
 }
 $('backupBtn').onclick=doBackup;
+
+/* ---------- step 1: video file + step bar ---------- */
+var VFILES={},VDUR={};
+function fmtDur(n){return fmtTime(Math.round(n));}
+function renderStepBar(){
+  var v=curVideo();if(!v)return;var has=!!VFILES[vid],mom=!!(v.moments&&v.moments.length),made=load(CK).some(function(c){return c.videoId===vid&&c.made;});
+  var st=[[has,'1. Video file'],[mom,'2. Find moments'],[made,'3. Make clips']],now=false,b=$('stepBar');b.innerHTML='';
+  st.forEach(function(x){var cls=x[0]?'done':(!now?(now=true,'now'):'');b.appendChild(el('div',cls,(x[0]?'✓ ':'')+T(x[1])));});
+}
+function renderStep1(){
+  var box=$('vidInfo');box.innerHTML='';var v=curVideo();
+  if(VFILES[vid]){box.appendChild(el('div','vok','✓ '+VFILES[vid].name+(VDUR[vid]?' · '+fmtDur(VDUR[vid])+' '+T('long'):'')));$('vidPick').textContent=T('Change video file');$('vidPick').className='full ghost';}
+  else{$('vidPick').textContent=T('Choose video file');$('vidPick').className='full';
+    if(v&&v.fileName)box.appendChild(el('div','vwarn',T('You added')+' “'+v.fileName+'” '+T('before. Add it again: video files aren’t kept after you close the app.')));}
+  renderStepBar();
+}
+$('vidPick').onclick=function(){$('vidFile').value='';$('vidFile').click();};
+$('vidFile').onchange=function(){
+  var f=this.files&&this.files[0];if(!f)return;VFILES[vid]=f;delete VDUR[vid];
+  patchVideo(function(v){v.fileName=f.name;});
+  var t=document.createElement('video');t.preload='metadata';t.muted=true;t.src=URL.createObjectURL(f);
+  t.onloadedmetadata=function(){VDUR[vid]=t.duration;URL.revokeObjectURL(t.src);renderStep1();};
+  t.onerror=function(){toast('That file won’t play here — try an MP4');};
+  renderStep1();toast('Video added');
+};
+/* ---------- step 3: make the clip video ---------- */
+function wrapLines(ctx,text,maxW){var words=String(text).split(/\s+/),lines=[],cur='';words.forEach(function(w){var t=cur?cur+' '+w:w;if(ctx.measureText(t).width>maxW&&cur){lines.push(cur);cur=w;}else cur=t;});if(cur)lines.push(cur);return lines.slice(0,4);}
+function pickMime(){if(!window.MediaRecorder)return null;var l=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];for(var i=0;i<l.length;i++){try{if(MediaRecorder.isTypeSupported(l[i]))return l[i];}catch(e){}}return '';}
+function cmodShow(html){$('cbox').innerHTML=html;$('cmod').style.display='flex';}
+function cmodClose(){$('cmod').style.display='none';}
+async function makeClipVideo(clipId){
+  var cs=load(CK),c=cs.filter(function(x){return x.id===clipId;})[0];if(!c)return;
+  var f=VFILES[c.videoId];
+  if(!f){goReview(c.videoId);setTimeout(function(){$('step1').scrollIntoView({block:'center'});},80);toast('Step 1 first: add the video file');return;}
+  if(c.start==null||c.end==null){toast('This clip needs a start and end time');return;}
+  var mime=pickMime();if(mime===null||!HTMLCanvasElement.prototype.captureStream){toast('This browser can’t make videos — try Chrome or Safari');return;}
+  cmodShow('<div class="gtop"><b>'+T('Making your clip…')+'</b></div><p class="gtxt" style="margin-top:0">'+T('Keep this screen open. It takes as long as the clip:')+' '+fmtLen(c.end-c.start)+'.</p><div class="prog"><i id="cprog"></i></div><p class="gnote" id="cstat"></p><div class="gnav" style="margin-top:12px"><button class="ghost" id="cCancel">'+T('Cancel')+'</button></div>');
+  var cancelled=false;$('cCancel').onclick=function(){cancelled=true;};
+  var url=URL.createObjectURL(f),v=document.createElement('video');
+  v.playsInline=true;v.setAttribute('playsinline','');v.preload='auto';v.src=url;v.style.cssText='position:fixed;left:-9999px;width:2px;height:2px';document.body.appendChild(v);
+  var ac=null;
+  function cleanup(){try{v.pause();}catch(e){}v.remove();URL.revokeObjectURL(url);if(ac)try{ac.close();}catch(e){}}
+  try{
+    await new Promise(function(res,rej){v.onloadedmetadata=res;v.onerror=function(){rej(new Error('play'));};});
+    if(c.start>=v.duration){throw new Error('range');}
+    var end=Math.min(c.end,v.duration);
+    var W=720,H=1280,cv=document.createElement('canvas');cv.width=W;cv.height=H;var ctx=cv.getContext('2d');
+    var sm=document.createElement('canvas');sm.width=18;sm.height=32;var sx=sm.getContext('2d');
+    var stream=cv.captureStream(30),hasAudio=false;
+    try{var AC=window.AudioContext||window.webkitAudioContext;ac=new AC();await ac.resume();var src=ac.createMediaElementSource(v),dst=ac.createMediaStreamDestination();src.connect(dst);dst.stream.getAudioTracks().forEach(function(t){stream.addTrack(t);hasAudio=true;});}catch(e){v.muted=true;}
+    var rec=new MediaRecorder(stream,mime?{mimeType:mime,videoBitsPerSecond:4500000}:{videoBitsPerSecond:4500000}),chunks=[];
+    rec.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data);};
+    var stopped=new Promise(function(r){rec.onstop=r;});
+    v.currentTime=c.start;await new Promise(function(r){v.onseeked=r;});
+    var hook=(c.hook||'').trim();
+    function draw(){
+      var vw=v.videoWidth||16,vh=v.videoHeight||9;
+      sx.drawImage(v,0,0,18,32);ctx.imageSmoothingEnabled=true;ctx.drawImage(sm,0,0,W,H);
+      ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(0,0,W,H);
+      var fh=W*vh/vw;if(fh>H){var fw=H*vw/vh;ctx.drawImage(v,(W-fw)/2,0,fw,H);}else ctx.drawImage(v,0,(H-fh)/2+60,W,fh);
+      if(hook){ctx.font='800 50px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';ctx.textAlign='center';ctx.textBaseline='top';
+        var lines=wrapLines(ctx,hook,W-90),lh=60,y=170;
+        lines.forEach(function(L,i){var tw=ctx.measureText(L).width;ctx.fillStyle='rgba(0,0,0,.72)';var bx=(W-tw)/2-16;if(ctx.roundRect){ctx.beginPath();ctx.roundRect(bx,y+i*lh-6,tw+32,lh,12);ctx.fill();}else ctx.fillRect(bx,y+i*lh-6,tw+32,lh);ctx.fillStyle='#fff';ctx.fillText(L,W/2,y+i*lh);});}
+    }
+    draw();rec.start(250);await v.play();
+    await new Promise(function(res){
+      (function tick(){if(cancelled||v.ended||v.currentTime>=end){res();return;}draw();var pr=Math.max(0,Math.min(1,(v.currentTime-c.start)/(end-c.start)));var pb=$('cprog');if(pb)pb.style.width=(pr*100).toFixed(1)+'%';var cs2=$('cstat');if(cs2)cs2.textContent=fmtTime(Math.floor(v.currentTime-c.start))+' / '+fmtTime(Math.round(end-c.start));requestAnimationFrame(tick);})();
+    });
+    v.pause();rec.stop();await stopped;
+    if(cancelled){cleanup();cmodClose();toast('Cancelled');return;}
+    var type=(mime||'video/webm').split(';')[0],ext=type.indexOf('mp4')>-1?'mp4':'webm',blob=new Blob(chunks,{type:type});
+    cleanup();
+    var cs3=load(CK),c3=cs3.filter(function(x){return x.id===clipId;})[0];if(c3){c3.made=true;c3.exported=true;store(CK,cs3);}
+    var name=(c.label||'clip').replace(/[^a-z0-9\-_ ]/gi,'').trim().replace(/\s+/g,'-').slice(0,60)||'clip';var fname='cut-crew-'+name+'.'+ext;
+    var burl=URL.createObjectURL(blob);
+    window.__lastClip={size:blob.size,type:type,fname:fname};
+    cmodShow('<div class="gtop"><b>✅ '+T('Your clip is ready')+'</b><button class="gx" id="cX" aria-label="Close">✕</button></div><video class="cprev" controls playsinline src="'+burl+'"></video>'+(hasAudio?'':'<p class="gnote">'+T('No sound was captured on this device.')+'</p>')+'<button class="full" id="cDl" style="margin-top:6px">'+T('Download clip')+'</button><p class="gnote">'+T('Then post it on TikTok, Reels or Shorts.')+(hook?' '+T('Your hook is already on the video.'):'')+'</p>');
+    $('cX').onclick=function(){cmodClose();URL.revokeObjectURL(burl);rerender();};
+    $('cDl').onclick=async function(){var ok=await saveFile(fname,blob);toast(ok?'Clip downloaded':'Couldn’t download here');};
+  }catch(e){
+    cleanup();
+    var msg=e&&e.message==='range'?'Those times are past the end of your video file. Is it the same video as the transcript?':'Something went wrong making the clip. Try again, or try an MP4 file.';
+    cmodShow('<div class="gtop"><b>'+T('Couldn’t make the clip')+'</b><button class="gx" id="cX">✕</button></div><p class="gtxt">'+T(msg)+'</p>');$('cX').onclick=cmodClose;
+  }
+}
+$('makeVidBtn').onclick=function(){if(cid)makeClipVideo(cid);};
+
 
 /* ---------- transcript picture guide ---------- */
 var GUIDE={
@@ -872,7 +988,7 @@ async function findMoments(){
 }
 function scoreColor(s){return s>=8?['#5FE3BC','rgba(95,227,188,.15)']:s>=5?['#F0C33C','rgba(240,195,60,.14)']:['#8E9A9C','rgba(142,154,156,.14)'];}
 function renderMoments(){
-  var box=$('moments');box.innerHTML='';var v=curVideo();if(!v||!v.moments||!v.moments.length)return;
+  var box=$('moments');box.innerHTML='';var v=curVideo();try{renderStepBar();}catch(e){}if(!v||!v.moments||!v.moments.length)return;
   var hd=el('div','head');hd.style.margin='14px 0 0';
   hd.appendChild(el('span',null,(lang==='th'?v.moments.length+' ช่วงเด็ด · ดีที่สุดก่อน':v.moments.length+' MOMENTS · BEST FIRST')));box.appendChild(hd);
   v.moments.forEach(function(m){
@@ -890,13 +1006,15 @@ function renderMoments(){
       b.onclick=function(){patchVideo(function(v2){var x=v2.moments.filter(function(y){return y.id===m.id;})[0];if(x)x.pick=i;});renderMoments();};
       c.appendChild(b);
     });
-    var sv=el('button','full',T(m.clipId?'Saved as a clip ✓ — open':'Save as clip'));sv.style.marginTop='10px';
-    if(m.clipId)sv.className='full ghost';
+    var mk=el('button','full',T('Make clip video'));mk.style.marginTop='10px';
+    mk.onclick=function(){var id=(m.clipId&&load(CK).some(function(x){return x.id===m.clipId;}))?m.clipId:saveMoment(m.id,true);if(id)makeClipVideo(id);};
+    c.appendChild(mk);
+    var sv=el('button','full ghost',T(m.clipId?'Saved as a clip ✓ — open':'Save as clip'));sv.style.marginTop='8px';
     sv.onclick=function(){if(m.clipId){if(load(CK).some(function(x){return x.id===m.clipId;})){goDetail(m.clipId);return;}}saveMoment(m.id);};
     c.appendChild(sv);box.appendChild(c);
   });
 }
-function saveMoment(mid){
+function saveMoment(mid,quiet){
   var v=curVideo();if(!v)return;var m=v.moments.filter(function(x){return x.id===mid;})[0];if(!m)return;
   var cs=load(CK),name=m.title,n=2;
   while(cs.some(function(c){return c.videoId===vid&&c.label.toLowerCase()===name.toLowerCase();}))name=m.title+' ('+(n++)+')';
@@ -904,7 +1022,8 @@ function saveMoment(mid){
   var clip={id:nid(),videoId:vid,label:name,savedAt:Date.now(),date:todayStr(),exported:false,start:m.start,end:m.end,hook:hk?hk.text:'',caption:'',tags:[],ai:{score:m.score,style:hk&&hk.style||m.style,why:m.why}};
   cs.push(clip);store(CK,cs);
   patchVideo(function(v2){var x=v2.moments.filter(function(y){return y.id===mid;})[0];if(x)x.clipId=clip.id;});
-  toast('Saved as a clip');renderReview();
+  if(quiet){renderReview();return clip.id;}
+  toast('Saved as a clip');renderReview();return clip.id;
 }
 $('aiIc').innerHTML=ic('spark',22,1.8);
 $('findBtn').onclick=findMoments;

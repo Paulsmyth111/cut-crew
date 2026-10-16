@@ -1,4 +1,4 @@
-# Cut Crew — 10-step test script
+# Cut Crew — test script (11 steps)
 
 Run this before every demo. Each step: do it, check the result. If a check fails, write it on known-bugs.md.
 
@@ -13,7 +13,8 @@ Run this before every demo. Each step: do it, check the result. If a check fails
 | 7 | Open that clip | Start/end, length and the hook you picked are already filled in |
 | 8 | Add a caption and hashtags `podcast funny`, tap **Save changes**, then **Copy post text** | Hashtags become `#podcast #funny`; pasting shows hook + caption + hashtags |
 | 9 | Tap **EN/ไทย**, then back | All screen text switches to Thai and back |
-| 10 | Reload the app | Everything is still there: project, transcript, moments, clip, hook |
+| 10 | Tap **Choose video file** (step 1), pick the video, then **Make clip video** on a moment | A "Making your clip" bar, then a vertical clip with the hook on top and a **Download clip** button |
+| 11 | Reload the app | Everything is still there: project, transcript, moments, clip, hook |
 
 ## Last run
 **Wed 14 Oct 2026** — automated run in a test browser, with a stand-in AI answer for step 5 (the real AI only runs inside Claude).
