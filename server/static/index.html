@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cut Crew</title>
+<meta name="theme-color" content="#0A0E0F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cut Crew">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<link rel="icon" href="/icon-192.png">
+<style>
+  :root{--bg:#0A0E0F;--surf:#111A1C;--surf2:#162023;--line:#1F2C2F;--teal:#5FE3BC;--ink:#062018;--text:#F2F6F5;--muted:#93A09F;--red:#E5534B;--amber:#F0C33C;color-scheme:dark}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    padding:max(18px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+  .wrap{max-width:620px;margin:0 auto;display:grid;gap:16px}
+  .logo{font-weight:900;font-style:italic;font-size:24px;letter-spacing:.02em}
+  .logo i{color:var(--teal);font-style:inherit}
+  .tag{font-size:10px;letter-spacing:.18em;color:var(--muted);margin-top:2px}
+  h1{font-size:clamp(30px,8vw,44px);line-height:1.04;margin:4px 0 0;letter-spacing:-.02em}
+  h1 span{color:var(--teal)}
+  .lead{color:#C7D1D0;margin:6px 0 0}
+  .card{background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:12px}
+  .imp{border:1.5px dashed var(--teal);background:linear-gradient(180deg,rgba(95,227,188,.10),rgba(95,227,188,.03))}
+  label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  input{width:100%;padding:13px 14px;font-size:16px;min-height:48px;border:1px solid var(--line);border-radius:12px;background:#0B1213;color:var(--text)}
+  input:focus{outline:none;border-color:var(--teal)}
+  button{font:inherit;font-weight:800;font-size:16px;min-height:50px;padding:12px 18px;border:0;border-radius:12px;background:var(--teal);color:var(--ink);cursor:pointer}
+  button:disabled{opacity:.5}
+  button.ghost{background:transparent;color:var(--text);border:1px solid var(--line);font-weight:700;font-size:14px;min-height:42px}
+  .chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .chips button{background:var(--bg);color:var(--muted);border:1px solid var(--line);font-size:13px;font-weight:700;min-height:46px;padding:8px 6px;line-height:1.2}
+  .chips button[aria-pressed=true]{border-color:var(--teal);color:var(--teal);background:rgba(95,227,188,.08)}
+  .err{color:var(--red);font-size:14px;margin:0}
+  .prog{display:grid;gap:10px}
+  .bar{height:10px;border-radius:5px;background:var(--bg);border:1px solid var(--line);overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--teal);width:5%;transition:width .4s}
+  .steps{display:grid;gap:6px;font-size:14px}
+  .steps div{color:var(--muted)} .steps div.on{color:var(--text);font-weight:700} .steps div.ok{color:var(--teal)}
+  .note{font-size:13px;color:var(--muted);margin:0}
+  .clip{display:grid;gap:12px}
+  .clip video{width:100%;max-height:72vh;aspect-ratio:9/16;background:#000;border-radius:12px;object-fit:contain}
+  .ch{display:flex;gap:12px;align-items:flex-start}
+  .sc{flex:0 0 48px;height:48px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:20px;line-height:1}
+  .sc small{font-size:10px;opacity:.7;font-weight:700}
+  .ct{font-weight:800;font-size:17px;line-height:1.25}
+  .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .pill{font-size:12px;font-weight:700;border-radius:999px;padding:3px 9px;background:rgba(95,227,188,.1);color:var(--teal)}
+  .pill.dim{background:var(--surf2);color:var(--muted)}
+  .hk{font-size:14px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:var(--bg)}
+  .hk b{display:block;font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:2px}
+  .hk.on{border-color:var(--teal)}
+  .post{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+  .row{display:flex;gap:8px} .row>*{flex:1}
+  a.btn{display:flex;align-items:center;justify-content:center;text-decoration:none;font-weight:800;min-height:50px;border-radius:12px;background:var(--teal);color:var(--ink)}
+  details summary{cursor:pointer;color:var(--teal);font-weight:700;font-size:14px}
+  .quote{font-style:italic;color:#C7D1D0;font-size:14px;margin:0}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div><div class="logo">CUT<i>.</i>CREW</div><div class="tag">TURN CLIPS INTO STORIES</div></div>
+  <div><h1>Paste a link.<br><span>Get the clips.</span></h1>
+    <p class="lead">The AI watches the whole video, finds the moments people stop scrolling for, and cuts them vertical with captions and a hook.</p></div>
+
+  <section class="card imp" id="form">
+    <div id="pcBox" hidden><label for="pc">Passcode</label><input id="pc" type="password" autocomplete="current-password" placeholder="Your Cut Crew passcode"></div>
+    <div><label for="url">YouTube link</label><input id="url" type="url" inputmode="url" placeholder="https://youtu.be/…" autocomplete="off"></div>
+    <div><label>How many clips</label>
+      <div class="chips" id="modes">
+        <button type="button" data-m="best" aria-pressed="true">Best 3 clips</button>
+        <button type="button" data-m="series" aria-pressed="false">Part 1 / 2 / 3</button>
+        <button type="button" data-m="single" aria-pressed="false">Just the best one</button>
+      </div></div>
+    <button id="go">Make my clips</button>
+    <p class="err" id="err" hidden></p>
+    <p class="note">Only clip videos you have the right to use: your own, or creators who allow clipping.</p>
+  </section>
+
+  <section class="card prog" id="prog" hidden>
+    <div class="ct" id="pTitle">Working on it…</div>
+    <div class="bar"><i id="pBar"></i></div>
+    <div class="steps" id="steps"></div>
+    <p class="note" id="pNote">Keep this page open. A 20-minute video takes a few minutes.</p>
+  </section>
+
+  <div id="clips" class="wrap" style="gap:16px"></div>
+  <button class="ghost" id="again" hidden>Make clips from another video</button>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+let mode='best',timer=null,job=null;
+const STEPS=['Downloading the video','Reading the transcript','AI is finding the best moments','Cutting clips','Done'];
+
+document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{mode=b.dataset.m;document.querySelectorAll('#modes button').forEach(x=>x.setAttribute('aria-pressed',x===b));});
+$('pc').value=store.get('cc_pc')||'';
+fetch('/api/health').then(r=>r.json()).then(h=>{$('pcBox').hidden=!h.passcode;}).catch(()=>{});
+function headers(){return {'Content-Type':'application/json','X-Passcode':$('pc').value.trim()};}
+function err(m){$('err').textContent=m;$('err').hidden=!m;}
+
+$('go').onclick=async()=>{
+  const url=$('url').value.trim();
+  if(!/^https?:\/\//i.test(url)){err('Paste the full link, starting with https://');return;}
+  err('');$('go').disabled=true;
+  try{
+    const r=await fetch('/api/jobs',{method:'POST',headers:headers(),body:JSON.stringify({url,mode,count:3})});
+    const j=await r.json().catch(()=>({}));
+    if(r.status===401){$('pcBox').hidden=false;err('Wrong passcode.');return;}
+    if(!r.ok)throw new Error(j.detail||'Couldn’t start');
+    store.set('cc_pc',$('pc').value.trim());store.set('cc_job',j.id);
+    start(j.id);
+  }catch(e){err(e.message||'Couldn’t reach the server. Check your connection.');}
+  finally{$('go').disabled=false;}
+};
+
+function start(id){job=id;$('form').hidden=true;$('prog').hidden=false;$('again').hidden=true;$('clips').innerHTML='';poll();}
+async function poll(){
+  clearTimeout(timer);
+  try{
+    const r=await fetch('/api/jobs/'+job,{headers:headers()});
+    if(r.status===404){store.del('cc_job');reset();err('That job expired. Paste the link again.');return;}
+    const j=await r.json();render(j);
+    if(j.status==='working')timer=setTimeout(poll,2000);
+    else{store.del('cc_job');$('again').hidden=false;}
+  }catch(e){timer=setTimeout(poll,4000);}
+}
+function stepIndex(s){if(!s)return 0;if(s.startsWith('Cutting'))return 3;const i=STEPS.indexOf(s);return i<0?(s.startsWith('Writing')?1:0):i;}
+let shown=0;
+function render(j){
+  $('pTitle').textContent=j.title||'Working on it…';
+  const si=j.status==='done'?4:stepIndex(j.step);
+  let pct=[8,25,45,60,100][si];
+  if(si===3&&j.total)pct=60+40*(j.clips.length/j.total);
+  $('pBar').style.width=pct+'%';
+  $('steps').innerHTML='';
+  STEPS.slice(0,4).forEach((s,i)=>{const d=document.createElement('div');d.className=i<si?'ok':i===si&&j.status==='working'?'on':'';d.textContent=(i<si?'✓ ':i===si&&j.status==='working'?'● ':'○ ')+(i===3&&si===3?j.step:s);$('steps').appendChild(d);});
+  if(j.status==='error'){$('prog').hidden=true;$('form').hidden=false;err(j.error);return;}
+  if(j.status==='done'){$('pNote').textContent=j.clips.length+(j.clips.length===1?' clip':' clips')+' ready. Tap Download to save one to your phone.';}
+  for(;shown<j.clips.length;shown++)$('clips').appendChild(clipCard(j,j.clips[shown],shown));
+}
+function el(t,c,txt){const e=document.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e;}
+function clipCard(j,c,i){
+  const card=el('section','card clip');
+  const v=el('video');v.controls=true;v.playsInline=true;v.preload='metadata';v.src='/files/'+j.id+'/'+c.files.video;if(c.files.thumb)v.poster='/files/'+j.id+'/'+c.files.thumb;card.appendChild(v);
+  const h=el('div','ch');const s=el('div','sc');const col=c.score>=8?'var(--teal)':c.score>=5?'var(--amber)':'var(--muted)';s.style.color=col;s.style.background='rgba(255,255,255,.04)';s.append(String(c.score??'–'),el('small',null,'/10'));h.appendChild(s);
+  const t=el('div');t.appendChild(el('div','ct',c.title));const m=el('div','meta');
+  m.append(el('span','pill',c.files.length+'s'),el('span','pill dim','from '+c.start_label+'–'+c.end_label));
+  if(c.files.cut_seconds>0.5)m.appendChild(el('span','pill dim',c.files.cut_seconds+'s dead air cut'));
+  t.appendChild(m);h.appendChild(t);card.appendChild(h);
+  if(c.quote)card.appendChild(el('p','quote','“'+c.quote+'”'));
+  const dl=el('a','btn','Download clip');dl.href='/files/'+j.id+'/'+c.files.video+'?dl=1';dl.setAttribute('download','');card.appendChild(dl);
+  const post=(c.caption||'')+'\n\n'+(c.hashtags||[]).join(' ');
+  const pb=el('div','post',post.trim());card.appendChild(pb);
+  const cp=el('button','ghost','Copy caption + hashtags');cp.onclick=async()=>{try{await navigator.clipboard.writeText(post.trim());cp.textContent='Copied ✓';}catch(e){const r=document.createRange();r.selectNodeContents(pb);getSelection().removeAllRanges();getSelection().addRange(r);cp.textContent='Selected, copy it';}};card.appendChild(cp);
+  if(c.hooks&&c.hooks.length){const d=el('details');d.appendChild(el('summary',null,'Hook options ('+c.hooks.length+')'));const box=el('div');box.style.cssText='display:grid;gap:6px;margin-top:8px';
+    c.hooks.forEach((hk,k)=>{const x=el('div','hk'+(k===0?' on':''));x.appendChild(el('b',null,(k===0?'On the clip · ':'')+(hk.style||'hook')));x.appendChild(document.createTextNode(hk.text));box.appendChild(x);});
+    d.appendChild(box);card.appendChild(d);}
+  if(c.why){const d=el('details');d.appendChild(el('summary',null,'Why the AI picked this'));const p=el('p','note',c.why);p.style.marginTop='8px';d.appendChild(p);card.appendChild(d);}
+  return card;
+}
+function reset(){clearTimeout(timer);job=null;shown=0;$('form').hidden=false;$('prog').hidden=true;$('again').hidden=true;$('clips').innerHTML='';$('pNote').textContent='Keep this page open. A 20-minute video takes a few minutes.';}
+$('again').onclick=()=>{reset();$('url').value='';$('url').focus();};
+const last=store.get('cc_job');if(last)start(last);
+const shared=new URLSearchParams(location.search).get('url');if(shared&&!last)$('url').value=shared;
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+FROM python:3.12-slim
+# ffmpeg cuts the clips; fonts for the captions; deno lets yt-dlp read YouTube's player code
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core curl unzip ca-certificates \
+ && curl -fsSL https://deno.land/install.sh | DENO_INSTALL=/usr/local sh \
+ && apt-get purge -y curl unzip && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+ENV PORT=8000 DATA_DIR=/tmp/cutcrew-jobs
+CMD ["sh","-c","uvicorn app:app --host 0.0.0.0 --port ${PORT}"]

@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: cut-crew
+    runtime: docker
+    rootDir: server
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: APP_PASSCODE
+        sync: false
+      - key: MAX_MINUTES
+        value: "90"
