@@ -16,7 +16,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict
 from pathlib import Path
 
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
@@ -63,11 +63,16 @@ def cleanup():
         shutil.rmtree(DATA / j, ignore_errors=True)
 
 
-def work(jid: str, req: JobIn):
+def work(jid: str, req: JobIn, upload: Path | None = None, title: str = ""):
     d = DATA / jid
     say = lambda m: update(jid, step=m)
     try:
-        src = P.fetch(req.url.strip(), d / "src", progress=say)
+        if upload:
+            src = P.Source(upload, title or "your video", P.probe(upload)["duration"], None)
+            if src.duration > P.MAX_MINUTES * 60:
+                raise P.PipelineError(f"That video is longer than {P.MAX_MINUTES} minutes.")
+        else:
+            src = P.fetch(req.url.strip(), d / "src", progress=say)
         info = P.probe(src.video)
         update(jid, title=src.title, duration=round(src.duration))
         say("Reading the transcript")
@@ -102,6 +107,39 @@ def create_job(req: JobIn, x_passcode: str | None = Header(default=None)):
         JOBS[jid] = {"id": jid, "status": "working", "step": "Starting", "url": req.url, "mode": req.mode,
                      "clips": [], "total": None, "title": None, "error": None, "created": time.time()}
     POOL.submit(work, jid, req)
+    return {"id": jid}
+
+
+MAX_UPLOAD_MB = int(os.environ.get("MAX_UPLOAD_MB", "2000"))
+VIDEO_EXT = {".mp4", ".mov", ".m4v", ".webm", ".mkv", ".avi", ".3gp"}
+
+
+@app.post("/api/upload")
+def upload_job(file: UploadFile = File(...), mode: str = Form("best"), count: int = Form(3),
+               x_passcode: str | None = Header(default=None)):
+    check(x_passcode)
+    ext = Path(file.filename or "video.mp4").suffix.lower()
+    if ext not in VIDEO_EXT and not (file.content_type or "").startswith("video/"):
+        raise HTTPException(400, "That file isn't a video")
+    cleanup()
+    jid = secrets.token_urlsafe(8)
+    dst = DATA / jid / "src" / ("video" + (ext if ext in VIDEO_EXT else ".mp4"))
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    size = 0
+    with open(dst, "wb") as f:
+        while chunk := file.file.read(1 << 20):
+            size += len(chunk)
+            if size > MAX_UPLOAD_MB * 1024 * 1024:
+                f.close()
+                shutil.rmtree(DATA / jid, ignore_errors=True)
+                raise HTTPException(413, f"That file is bigger than {MAX_UPLOAD_MB} MB")
+            f.write(chunk)
+    title = Path(file.filename or "your video").stem[:80]
+    req = JobIn(url="upload", mode=mode, count=count)
+    with LOCK:
+        JOBS[jid] = {"id": jid, "status": "working", "step": "Reading the transcript", "url": "upload", "mode": mode,
+                     "clips": [], "total": None, "title": title, "error": None, "created": time.time()}
+    POOL.submit(work, jid, req, dst, title)
     return {"id": jid}
 
 

@@ -217,7 +217,7 @@ def transcribe(src: Source, progress=lambda m: None) -> list[Word]:
     try:
         from faster_whisper import WhisperModel  # type: ignore
     except ImportError:
-        raise PipelineError("This video has no captions on YouTube, and speech-to-text isn't switched on for this server.")
+        raise PipelineError("This video has no captions, and speech-to-text isn't switched on for this server.")
     progress("Writing the transcript")
     model = WhisperModel(os.environ.get("WHISPER_MODEL", "base"), device="cpu", compute_type="int8")
     segs, _ = model.transcribe(str(src.video), word_timestamps=True, vad_filter=True)
