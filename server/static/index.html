@@ -63,10 +63,13 @@
   .picked{display:flex;align-items:center;gap:8px;border:1px solid var(--teal);border-radius:12px;padding:10px 12px;color:var(--teal);font-weight:700;font-size:14px;overflow-wrap:anywhere}
   .picked span{flex:1}
   .picked .x{background:none;color:var(--muted);min-height:32px;padding:4px 8px;font-size:16px}
+  .offline{position:sticky;top:0;z-index:5;margin:0 auto 12px;max-width:620px;background:var(--amber);color:#1a1300;font-weight:700;font-size:14px;border-radius:12px;padding:10px 14px}
+  .ct{overflow-wrap:anywhere}
   [hidden]{display:none!important}
 </style>
 </head>
 <body>
+<div class="offline" id="offline" hidden>You're offline. Your clips keep cooking on the server and show up when you're back.</div>
 <div class="wrap">
   <div><div class="logo">CUT<i>.</i>CREW</div><div class="tag">TURN CLIPS INTO STORIES</div></div>
   <div><h1>Paste a link.<br><span>Get the clips.</span></h1>
@@ -131,21 +134,28 @@ function uploadFile(){
 }
 $('go').onclick=async()=>{
   if(file){
+    if(!navigator.onLine){err('You\'re offline. Connect to the internet, then try again.');return;}
+    if(file.size===0){err('That file is empty. Pick another video.');return;}
     err('');$('go').disabled=true;
     try{const j=await uploadFile();store.set('cc_pc',$('pc').value.trim());store.set('cc_job',j.id);start(j.id);}
     catch(e){$('prog').hidden=true;$('form').hidden=false;if(e&&e.pc){$('pcBox').hidden=false;err('Wrong passcode.');}else err(e.message||'Upload failed.');}
     finally{$('go').disabled=false;}
     return;
   }
-  const url=$('url').value.trim();
-  if(!url){err('Paste a YouTube link or upload a video.');return;}
-  if(!/^https?:\/\//i.test(url)){err('Paste the full link, starting with https://');return;}
+  if(!navigator.onLine){err('You\'re offline. Connect to the internet, then try again.');return;}
+  const raw=$('url').value.trim();
+  if(!raw){err('Paste a YouTube link or upload a video.');return;}
+  const found=raw.match(/https?:\/\/\S+/i);
+  if(!found){err('That doesn\'t look like a link. Paste the full link, starting with https://');return;}
+  const url=found[0].replace(/[)\]}>.,!?'"]+$/,'');
+  if(url.length>2000){err('That link is too long. Copy just the video link.');return;}
+  $('url').value=url;
   err('');$('go').disabled=true;
   try{
     const r=await fetch('/api/jobs',{method:'POST',headers:headers(),body:JSON.stringify({url,mode,count:3})});
     const j=await r.json().catch(()=>({}));
     if(r.status===401){$('pcBox').hidden=false;err('Wrong passcode.');return;}
-    if(!r.ok)throw new Error(j.detail||'Couldn’t start');
+    if(!r.ok)throw new Error(typeof j.detail==='string'?j.detail:'Couldn’t start. Check the link and try again.');
     store.set('cc_pc',$('pc').value.trim());store.set('cc_job',j.id);
     start(j.id);
   }catch(e){err(e.message||'Couldn’t reach the server. Check your connection.');}
@@ -199,6 +209,9 @@ function clipCard(j,c,i){
 }
 function reset(){clearTimeout(timer);if(typeof file!=="undefined"&&file)$("unpick").onclick();job=null;shown=0;$('form').hidden=false;$('prog').hidden=true;$('again').hidden=true;$('clips').innerHTML='';$('pNote').textContent='Keep this page open. A 20-minute video takes a few minutes.';}
 $('again').onclick=()=>{reset();$('url').value='';$('url').focus();};
+function net(){$('offline').hidden=navigator.onLine;if(navigator.onLine&&job)poll();}
+addEventListener('online',net);addEventListener('offline',net);net();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 const last=store.get('cc_job');if(last)start(last);
 const shared=new URLSearchParams(location.search).get('url');if(shared&&!last)$('url').value=shared;
 </script>

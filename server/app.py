@@ -99,9 +99,21 @@ def work(jid: str, req: JobIn, upload: Path | None = None, title: str = ""):
 @app.post("/api/jobs")
 def create_job(req: JobIn, x_passcode: str | None = Header(default=None)):
     check(x_passcode)
-    if not req.url.strip():
+    url = req.url.strip()
+    if not url:
         raise HTTPException(400, "Paste a video link")
+    if len(url) > 2000:
+        raise HTTPException(400, "That link is too long. Copy just the video link.")
+    if not url.lower().startswith(("http://", "https://")) and not (url.startswith("file://") and os.environ.get("ALLOW_LOCAL_FILES") == "1"):
+        raise HTTPException(400, "Paste the full link, starting with https://")
+    req.url = url
+    req.mode = req.mode if req.mode in ("best", "series", "single") else "best"
+    req.count = max(1, min(8, req.count))
     cleanup()
+    with LOCK:  # tapped twice, or pasted the same link again while it's still working: reuse that job
+        for j in JOBS.values():
+            if j["status"] == "working" and j["url"] == url and j["mode"] == req.mode:
+                return {"id": j["id"], "existing": True}
     jid = secrets.token_urlsafe(8)
     with LOCK:
         JOBS[jid] = {"id": jid, "status": "working", "step": "Starting", "url": req.url, "mode": req.mode,
@@ -134,8 +146,12 @@ def upload_job(file: UploadFile = File(...), mode: str = Form("best"), count: in
                 shutil.rmtree(DATA / jid, ignore_errors=True)
                 raise HTTPException(413, f"That file is bigger than {MAX_UPLOAD_MB} MB")
             f.write(chunk)
+    if size == 0:
+        shutil.rmtree(DATA / jid, ignore_errors=True)
+        raise HTTPException(400, "That file is empty")
     title = Path(file.filename or "your video").stem[:80]
-    req = JobIn(url="upload", mode=mode, count=count)
+    mode = mode if mode in ("best", "series", "single") else "best"
+    req = JobIn(url="upload", mode=mode, count=max(1, min(8, count)))
     with LOCK:
         JOBS[jid] = {"id": jid, "status": "working", "step": "Reading the transcript", "url": "upload", "mode": mode,
                      "clips": [], "total": None, "title": title, "error": None, "created": time.time()}
@@ -174,6 +190,11 @@ def health():
 @app.get("/", response_class=HTMLResponse)
 def home():
     return (HERE / "static" / "index.html").read_text(encoding="utf-8")
+
+
+@app.get("/sw.js")
+def service_worker():
+    return FileResponse(HERE / "static" / "sw.js", media_type="text/javascript", headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/manifest.webmanifest")
