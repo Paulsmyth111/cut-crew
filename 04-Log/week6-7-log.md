@@ -39,5 +39,12 @@ First half: server downloads the video, reads the transcript, AI picks the momen
 Second half: the clips screen (play, download, copy caption, hook options, why the AI picked it). You can also upload a video from your phone as well as pasting a link.
 Edge cases tested, 14 out of 14 pass: empty box, word instead of link, 5000-letter link, messy paste, empty file, double tap, same link twice, no passcode, offline banner, Make while offline, app opens offline, signal lost mid-job.
 
+**Screenshots (05-Screenshots/2026-10-20-*):** the app screens are real. The clip inside uses a test video (a colour pattern), because the build machine can't download YouTube. The first real-footage clip comes once the server is live.
+
+## What the app can and can't do right now
+- **Can:** paste a link or upload a video, AI picks moments from what's said, cuts dead air, crops vertical around faces, burns in captions and a hook, levels the sound, exports 1080x1920 MP4s with caption + hashtags. Tested on test videos.
+- **Not yet tested for real:** downloading real YouTube links and the real AI pick inside the server (needs the server live and an AI key), and speech-to-text for uploads without captions.
+- **Can't yet:** the server's AI picks moments from the words, not the picture. It isn't live yet, so it doesn't work on phones until it's on Render.
+
 ## Next
 Put the server live (AI key + Render), test real YouTube links, show Luke on his own phone.
