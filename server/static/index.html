@@ -65,6 +65,14 @@
   .picked .x{background:none;color:var(--muted);min-height:32px;padding:4px 8px;font-size:16px}
   .offline{position:sticky;top:0;z-index:5;margin:0 auto 12px;max-width:620px;background:var(--amber);color:#1a1300;font-weight:700;font-size:14px;border-radius:12px;padding:10px 14px}
   .ct{overflow-wrap:anywhere}
+  .big{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:96px;font-size:20px;border-radius:16px;box-shadow:0 8px 30px rgba(95,227,188,.25)}
+  .big .bi{font-size:24px;line-height:1}
+  .big small{font-size:13px;font-weight:600;opacity:.75}
+  .urlrow{display:flex;gap:8px}.urlrow input{flex:1;min-width:0}.urlrow button{flex:0 0 auto;padding:12px 20px}
+  details.opts summary{list-style:none;cursor:pointer;font-size:14px;color:var(--muted);text-align:center}
+  details.opts summary::-webkit-details-marker{display:none}
+  details.opts summary b{color:var(--text)} details.opts summary span{color:var(--teal);font-weight:700;margin-left:4px}
+  details.opts .chips{margin-top:10px}
   [hidden]{display:none!important}
 </style>
 </head>
@@ -77,20 +85,20 @@
 
   <section class="card imp" id="form">
     <div id="pcBox" hidden><label for="pc">Passcode</label><input id="pc" type="password" autocomplete="current-password" placeholder="Your Cut Crew passcode"></div>
-    <div><label for="url">YouTube link</label><input id="url" type="url" inputmode="url" placeholder="https://youtu.be/…" autocomplete="off"></div>
+    <button id="pasteGo" class="big"><span class="bi">📋</span>Paste link &amp; make clips<small>Copy a YouTube link, then tap here</small></button>
+    <p class="err" id="err" hidden></p>
     <div class="or"><span>or</span></div>
+    <div class="urlrow"><input id="url" type="url" inputmode="url" enterkeyhint="go" placeholder="Paste a link here…" autocomplete="off" aria-label="YouTube link"><button id="go" aria-label="Make clips">Go</button></div>
     <input type="file" id="file" accept="video/*" hidden>
     <button type="button" class="ghost" id="pick">Upload a video from your phone</button>
     <div class="picked" id="picked" hidden><span id="pickedName"></span><button type="button" class="x" id="unpick" aria-label="Remove video">✕</button></div>
-    <div><label>How many clips</label>
+    <details class="opts" id="optBox"><summary>Clips: <b id="modeLabel">Best 3 clips</b> <span>change</span></summary>
       <div class="chips" id="modes">
         <button type="button" data-m="best" aria-pressed="true">Best 3 clips</button>
         <button type="button" data-m="series" aria-pressed="false">Part 1 / 2 / 3</button>
         <button type="button" data-m="single" aria-pressed="false">Just the best one</button>
-      </div></div>
-    <button id="go">Make my clips</button>
-    <p class="err" id="err" hidden></p>
-    <p class="note">Only clip videos you have the right to use: your own, or creators who allow clipping. Uploaded videos without captions take a bit longer, because the AI writes the transcript first.</p>
+      </div></details>
+    <p class="note">Only clip videos you have the right to use: your own, or creators who allow clipping.</p>
   </section>
 
   <section class="card prog" id="prog" hidden>
@@ -110,9 +118,10 @@ const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},se
 let mode='best',timer=null,job=null;
 const STEPS=['Downloading the video','Reading the transcript','AI is finding the best moments','Cutting clips','Done'];
 
-document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{mode=b.dataset.m;document.querySelectorAll('#modes button').forEach(x=>x.setAttribute('aria-pressed',x===b));});
+document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{mode=b.dataset.m;store.set('cc_mode',mode);document.querySelectorAll('#modes button').forEach(x=>x.setAttribute('aria-pressed',x===b));$('modeLabel').textContent=b.textContent;$('optBox').open=false;});
+(function(){const m=store.get('cc_mode');const b=m&&document.querySelector('#modes button[data-m="'+m+'"]');if(b)b.onclick();})();
 $('pc').value=store.get('cc_pc')||'';
-fetch('/api/health').then(r=>r.json()).then(h=>{$('pcBox').hidden=!h.passcode;}).catch(()=>{});
+fetch('/api/health').then(r=>r.json()).then(h=>{$('pcBox').hidden=!h.passcode||!!store.get('cc_pc');}).catch(()=>{});
 function headers(){return {'Content-Type':'application/json','X-Passcode':$('pc').value.trim()};}
 function err(m){$('err').textContent=m;$('err').hidden=!m;}
 
@@ -132,6 +141,19 @@ function uploadFile(){
     x.send(fd);
   });
 }
+function findLink(t){const m=String(t||'').match(/https?:\/\/\S+/i);return m?m[0].replace(/[)\]}>.,!?'"]+$/,''):null;}
+$('pasteGo').onclick=async()=>{
+  err('');
+  let t='';
+  try{t=await navigator.clipboard.readText();}catch(e){}
+  const link=findLink(t);
+  if(link){$('url').value=link;if(file)$('unpick').onclick();$('go').onclick();return;}
+  $('url').focus();
+  err(t?'What you copied isn\'t a link. Copy the video link from YouTube (Share, then Copy link), then tap again.':'Paste your link in the box below, then tap Go.');
+};
+// pasting a link straight into the box starts it, no extra tap
+$('url').addEventListener('paste',e=>{const t=(e.clipboardData||window.clipboardData).getData('text');const link=findLink(t);if(link){e.preventDefault();$('url').value=link;setTimeout(()=>$('go').onclick(),50);}});
+$('url').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('go').onclick();}});
 $('go').onclick=async()=>{
   if(file){
     if(!navigator.onLine){err('You\'re offline. Connect to the internet, then try again.');return;}
@@ -184,7 +206,7 @@ function render(j){
   $('steps').innerHTML='';
   STEPS.slice(0,4).forEach((s,i)=>{const d=document.createElement('div');d.className=i<si?'ok':i===si&&j.status==='working'?'on':'';d.textContent=(i<si?'✓ ':i===si&&j.status==='working'?'● ':'○ ')+(i===3&&si===3?j.step:(i===0&&j.url==='upload'?'Uploading your video':s));$('steps').appendChild(d);});
   if(j.status==='error'){$('prog').hidden=true;$('form').hidden=false;err(j.error);return;}
-  if(j.status==='done'){$('pNote').textContent=j.clips.length+(j.clips.length===1?' clip':' clips')+' ready. Tap Download to save one to your phone.';}
+  if(j.status==='done'){$('pNote').textContent=j.clips.length+(j.clips.length===1?' clip':' clips')+' ready. Tap Save to phone on the one you want.';}
   for(;shown<j.clips.length;shown++)$('clips').appendChild(clipCard(j,j.clips[shown],shown));
 }
 function el(t,c,txt){const e=document.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e;}
@@ -197,7 +219,22 @@ function clipCard(j,c,i){
   if(c.files.cut_seconds>0.5)m.appendChild(el('span','pill dim',c.files.cut_seconds+'s dead air cut'));
   t.appendChild(m);h.appendChild(t);card.appendChild(h);
   if(c.quote)card.appendChild(el('p','quote','“'+c.quote+'”'));
-  const dl=el('a','btn','Download clip');dl.href='/files/'+j.id+'/'+c.files.video+'?dl=1';dl.setAttribute('download','');card.appendChild(dl);
+  const href='/files/'+j.id+'/'+c.files.video;
+  const sv=el('button',null,'Save to phone');sv.onclick=async()=>{
+    sv.disabled=true;sv.textContent='Getting the clip…';
+    try{
+      const b=await (await fetch(href)).blob();const f=new File([b],'cut-crew-clip-'+(i+1)+'.mp4',{type:'video/mp4'});
+      const dlBlob=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=f.name;document.body.appendChild(a);a.click();a.remove();sv.textContent='Downloaded ✓';};
+      let shared=false;
+      if(navigator.canShare&&navigator.canShare({files:[f]})){
+        try{await navigator.share({files:[f]});shared=true;sv.textContent='Saved ✓';}
+        catch(e){if(e&&e.name==='AbortError'){sv.textContent='Save to phone';return;}}
+      }
+      if(!shared)dlBlob();
+    }catch(e){sv.textContent='Try again';}
+    finally{sv.disabled=false;}
+  };card.appendChild(sv);
+  const dl=el('a',null,'or download the file');dl.href=href+'?dl=1';dl.setAttribute('download','');dl.style.cssText='text-align:center;color:var(--muted);font-size:13px';card.appendChild(dl);
   const post=(c.caption||'')+'\n\n'+(c.hashtags||[]).join(' ');
   const pb=el('div','post',post.trim());card.appendChild(pb);
   const cp=el('button','ghost','Copy caption + hashtags');cp.onclick=async()=>{try{await navigator.clipboard.writeText(post.trim());cp.textContent='Copied ✓';}catch(e){const r=document.createRange();r.selectNodeContents(pb);getSelection().removeAllRanges();getSelection().addRange(r);cp.textContent='Selected, copy it';}};card.appendChild(cp);
@@ -213,7 +250,8 @@ function net(){$('offline').hidden=navigator.onLine;if(navigator.onLine&&job)pol
 addEventListener('online',net);addEventListener('offline',net);net();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 const last=store.get('cc_job');if(last)start(last);
-const shared=new URLSearchParams(location.search).get('url');if(shared&&!last)$('url').value=shared;
+const qs=new URLSearchParams(location.search);const shared=findLink(qs.get('url')||qs.get('text'));
+if(shared&&!last){$('url').value=shared;history.replaceState(null,'','/');if(store.get('cc_pc')!==null)setTimeout(()=>$('go').onclick(),300);}
 </script>
 </body>
 </html>
